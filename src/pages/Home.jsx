@@ -4,7 +4,7 @@ import React from "react";
 // "key" doit correspondre aux clés utilisées dans App.jsx (MODULE_META) pour la navigation.
 const MODULES = [
   {key:"cases", icon:"Ф", color:"var(--accent-cases)", title:"Les cas russes", desc:"6 cas, terminaisons, exemples et leçons interactives."},
-  {key:"verbs", icon:"Г", color:"var(--accent-verbs)", title:"Conjugaison", desc:"30 verbes essentiels — présent, passé, futur, 2 aspects."},
+  {key:"verbs", icon:"Г", color:"var(--accent-verbs)", title:"Conjugaison", desc:"62 verbes essentiels — présent, passé, futur, 2 aspects."},
   {key:"dictation", icon:"♪", color:"var(--accent-dictation)", title:"Dictée", desc:"Écoute ou lis une phrase russe, écris ce que tu entends."},
   {key:"translation", icon:"⇄", color:"var(--accent-translation)", title:"Traduction", desc:"Phrases FR ↔ RU, à ton rythme, auto-évaluées."},
 ];

@@ -18,20 +18,22 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icon-192.png", "icon-512.png"],
+      includeAssets: ["icon-192.png", "icon-512.png", "icon-mask-512.png"],
       manifest: {
         name: "FreskoRusse",
         short_name: "FreskoRusse",
         description: "Cas, conjugaison, dictée et traduction russes — hors ligne.",
+        lang: "fr",
+        orientation: "portrait",
         theme_color: "#10151F",
         background_color: "#10151F",
         display: "standalone",
         start_url: "./",
         scope: "./",
         icons: [
-          { src: "icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "icon-512.png", sizes: "512x512", type: "image/png" },
-          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          { src: "icon-mask-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {

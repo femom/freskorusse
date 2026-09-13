@@ -107,12 +107,12 @@ export default function Verbs({ selected, onSelect, addXp }){
     return (
       <section>
         <h1 className="title">Les verbes russes</h1>
-        <p className="subtitle">30 verbes essentiels — clique sur un verbe pour voir sa conjugaison complète.</p>
+        <p className="subtitle">62 verbes essentiels — clique sur un verbe pour voir sa conjugaison complète.</p>
 
         <div className="lesson-launch" style={{"--lesson-accent":"var(--accent-verbs)"}}>
           <div className="info">
             <h4>Leçon interactive</h4>
-            <p>12 questions tirées au hasard parmi les 30 verbes. 3 vies.</p>
+            <p>12 questions tirées au hasard parmi les 62 verbes. 3 vies.</p>
           </div>
           <button className="btn-start" onClick={()=> setLessonOpen(true)}>Démarrer la leçon ▶</button>
         </div>
