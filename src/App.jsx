@@ -2,10 +2,12 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import Home from "./pages/Home.jsx";
 import Cases from "./pages/Cases.jsx";
 import Verbs from "./pages/Verbs.jsx";
+import Bank from "./pages/Bank.jsx";
 import Dictation from "./pages/Dictation.jsx";
 import Translation from "./pages/Translation.jsx";
 import { cases, caseColors, caseAbbr } from "./data/cases.js";
 import { verbs, groupColor } from "./data/verbs.js";
+import { wordBank } from "./data/wordbank.js";
 
 // Nom affiché de l'application (utilisé dans la barre latérale). Le nom "technique"
 // du projet (package.json, manifest PWA) reste "freskorusse" en minuscules, mais
@@ -20,6 +22,7 @@ const MODULE_META = {
   home: { label: "Accueil", icon: "◐", color: "var(--ink-faint)" },
   cases: { label: "Les cas", icon: "Ф", color: "var(--accent-cases)" },
   verbs: { label: "Conjugaison", icon: "Г", color: "var(--accent-verbs)" },
+  bank: { label: "Banque de mots", icon: "★", color: "var(--accent-bank)" },
   dictation: { label: "Dictée", icon: "♪", color: "var(--accent-dictation)" },
   translation: {
     label: "Traduction",
@@ -145,6 +148,17 @@ export default function App() {
     navigate(mod, subKey);
   }
 
+  // Un "détail" est ouvert quand on regarde un cas ou un verbe précis (pas la liste).
+  // Sert à transformer le bouton "⋯" du haut, sur mobile, en flèche de retour.
+  const hasDetailOpen =
+    (module === "cases" && !!caseSelected) ||
+    (module === "verbs" && !!verbSelected);
+
+  function handleMobileBack() {
+    if (module === "cases") setCaseSelected(null);
+    if (module === "verbs") setVerbSelected(null);
+  }
+
   // Résultats de la recherche globale : on cherche dans les libellés des cas,
   // des verbes (français ou russe), et on propose aussi les modules dictée/traduction
   // si leur nom correspond à la saisie.
@@ -188,12 +202,21 @@ export default function App() {
         action: () => navigate("translation"),
       });
     }
+    wordBank.forEach((w) => {
+      if (w.ru.toLowerCase().includes(q) || w.fr.toLowerCase().includes(q)) {
+        res.push({
+          cat: "Mot",
+          label: `${w.ru} — ${w.fr}`,
+          action: () => navigate("bank"),
+        });
+      }
+    });
     return res.slice(0, 12);
   }, [search]);
 
   const renderNavContent = (opts = {}) => {
     const { compact = false, mobile = false } = opts;
-    const showSublist = !mobile || expandedSection === module;
+    const showSublist = !compact && (!mobile || expandedSection === module);
 
     return (
       <>
@@ -393,9 +416,11 @@ export default function App() {
         <button
           type="button"
           className="mobile-options"
-          aria-label="Options du profil"
+          aria-label={hasDetailOpen ? "Retour à la liste" : "Options"}
+          onClick={handleMobileBack}
+          disabled={!hasDetailOpen}
         >
-          ⋯
+          {hasDetailOpen ? "←" : "⋯"}
         </button>
       </header>
 
@@ -431,6 +456,7 @@ export default function App() {
             addXp={addXp}
           />
         )}
+        {module === "bank" && <Bank addXp={addXp} />}
         {module === "dictation" && <Dictation addXp={addXp} />}
         {module === "translation" && <Translation addXp={addXp} />}
       </main>

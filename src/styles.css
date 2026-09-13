@@ -35,6 +35,8 @@
    --accent-dictation-soft: rgba(217, 149, 79, 0.15);
    --accent-translation: #9270C4;
    --accent-translation-soft: rgba(146, 112, 196, 0.16);
+   --accent-bank: #D8B84A;
+   --accent-bank-soft: rgba(216, 184, 74, 0.16);
 
    --ok: #3FC98A;
    --ok-soft: rgba(63, 201, 138, 0.14);
@@ -63,6 +65,8 @@
    --accent-dictation-soft: #F5EDE3;
    --accent-translation: #7852AD;
    --accent-translation-soft: #EFE9F6;
+   --accent-bank: #B8860B;
+   --accent-bank-soft: #F7EFD9;
 
    --ok: #1F9A66;
    --ok-soft: #E4F5EC;
@@ -231,6 +235,15 @@ nav.side {
 .mobile-options:hover {
    border-color: var(--ink-faint);
    color: var(--ink);
+}
+
+.mobile-options:disabled {
+   opacity: 0.35;
+   cursor: default;
+}
+.mobile-options:disabled:hover {
+   border-color: var(--line);
+   color: var(--ink-soft);
 }
 
 .sidebar-toggle:active,
@@ -1508,4 +1521,96 @@ h2.verb-name {
       flex-direction: column;
       align-items: flex-start;
    }
+}
+
+/* -----------------------------------------------------------------------------
+   BANQUE DE MOTS — mot du hasard, flashcards à retourner, onglets de lettres
+   ----------------------------------------------------------------------------- */
+.spotlight-card{
+   background: var(--card);
+   border: 1px solid var(--line);
+   border-radius: var(--radius-lg);
+   padding: 24px;
+   margin-bottom: 22px;
+   text-align: center;
+}
+.spotlight-label{
+   font-size: 0.75rem;
+   font-weight: 800;
+   text-transform: uppercase;
+   letter-spacing: 0.06em;
+   color: var(--accent-bank);
+   margin-bottom: 14px;
+}
+.spotlight-flip{ width: 220px; height: 110px; margin: 0 auto 16px auto; }
+.spotlight-front{ font-size: 1.4rem; font-weight: 800; }
+.spotlight-shuffle{ background: var(--accent-bank); color: #1a1200; }
+
+/* Carte qui se retourne au clic — recto/verso en 3D via transform */
+.flip-card{
+   perspective: 800px;
+   cursor: pointer;
+   height: 84px;
+}
+.flip-card-inner{
+   position: relative;
+   width: 100%;
+   height: 100%;
+   text-align: center;
+   transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+   transform-style: preserve-3d;
+}
+.flip-card.flipped .flip-card-inner{ transform: rotateY(180deg); }
+.flip-card-face{
+   position: absolute;
+   inset: 0;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   padding: 8px 10px;
+   border-radius: var(--radius-md);
+   backface-visibility: hidden;
+   font-weight: 700;
+   font-size: 0.98rem;
+   border: 1px solid var(--line);
+   background: var(--card);
+   box-shadow: var(--shadow);
+}
+.flip-card-front{ color: var(--ink); }
+.flip-card-back{
+   transform: rotateY(180deg);
+   background: var(--accent-bank-soft);
+   color: var(--accent-bank);
+}
+
+.flip-grid{
+   display: grid;
+   grid-template-columns: repeat(4, 1fr);
+   gap: 12px;
+   margin-bottom: 20px;
+}
+
+.letter-tabs{
+   display: flex;
+   flex-wrap: wrap;
+   gap: 6px;
+   margin-bottom: 18px;
+}
+.letter-tab{
+   min-width: 34px;
+   padding: 6px 10px;
+   border-radius: 999px;
+   border: 1px solid var(--line);
+   background: var(--card);
+   color: var(--ink-soft);
+   font-size: 0.82rem;
+   font-weight: 700;
+   cursor: pointer;
+   transition: border-color .12s ease, color .12s ease, background-color .12s ease;
+}
+.letter-tab:hover{ border-color: var(--accent-bank); color: var(--ink); }
+.letter-tab.active{ background: var(--accent-bank-soft); border-color: var(--accent-bank); color: var(--accent-bank); }
+
+@media(max-width:800px){
+   .flip-grid{ grid-template-columns: repeat(2, 1fr); }
 }
