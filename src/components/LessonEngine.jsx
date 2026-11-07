@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { X, Heart, Trophy, HeartCrack, CheckCircle2, XCircle } from "lucide-react";
 
 // Normalise une réponse avant comparaison (casse, espaces, ё/е, ponctuation).
 function normalize(s){
@@ -55,15 +56,15 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
   return (
     <div className="game-overlay" style={{"--lesson-accent": accent}}>
       <div className="game-top">
-        <button className="exit-btn" onClick={onClose}>✕</button>
+        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
         <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div className="hearts">{[0,1,2].map(i=> <span key={i}>{i < hearts ? "♥" : "♡"}</span>)}</div>
+        <div className="hearts">{[0,1,2].map(i=> <Heart key={i} size={17} fill={i < hearts ? "currentColor" : "none"} />)}</div>
       </div>
 
       {finished === "win" && (
         <div className="game-card">
           <div className="end-screen">
-            <div className="big-emoji">🏆</div>
+            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
             <h3>Leçon terminée !</h3>
             <p>Tu as répondu à toutes les questions.</p>
             <div className="xp-earned">+{xpGain} XP</div>
@@ -75,7 +76,7 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
       {finished === "lose" && (
         <div className="game-card">
           <div className="end-screen">
-            <div className="big-emoji">💔</div>
+            <div className="big-emoji"><HeartCrack size={44} strokeWidth={1.8}/></div>
             <h3>Plus de vies</h3>
             <p>Pas grave — recommence, tu vas y arriver.</p>
             <div className="game-actions">
@@ -110,12 +111,13 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
           ) : (
             <input ref={inputRef} type="text" className="answer-input" placeholder="ta réponse..." autoComplete="off"
               disabled={answered}
+              onChange={(e)=> setSelected(e.target.value)}
               onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
             />
           )}
 
-          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")}>
-            {answered ? (correct ? "✓ Correct !" : "✗ Pas tout à fait") : ""}
+          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")} style={{display:"flex", alignItems:"center", justifyContent:"center", gap:6}}>
+            {answered && (correct ? <><CheckCircle2 size={18}/> Correct !</> : <><XCircle size={18}/> Pas tout à fait</>)}
           </div>
           <div className="game-explain">
             {answered && !correct ? "Réponse attendue : " + q.answer[0] : ""}
@@ -123,8 +125,8 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
 
           <div className="game-actions">
             {!answered ? (
-              <button className={"btn-primary" + (selected ? " ready" : "")}
-                disabled={!selected}
+              <button className={"btn-primary" + (selected && selected.trim() ? " ready" : "")}
+                disabled={!selected || !selected.trim()}
                 onClick={()=> check(selected)}>
                 Vérifier
               </button>

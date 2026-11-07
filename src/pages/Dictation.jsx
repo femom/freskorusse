@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { dictation } from "../data/dictation.js";
+import { X, Heart, Trophy, HeartCrack, Volume2, CheckCircle2, XCircle } from "lucide-react";
 
 // Normalise une chaîne pour comparer les réponses sans être trop strict :
 // espaces superflus, casse, ё/е (souvent confondus à l'écrit) et ponctuation ignorés.
@@ -105,15 +106,15 @@ function DictationGame({ onClose, onFinish }){
   return (
     <div className="game-overlay" style={{"--lesson-accent":"var(--accent-dictation)"}}>
       <div className="game-top">
-        <button className="exit-btn" onClick={onClose}>✕</button>
+        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
         <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div className="hearts">{[0,1,2].map(i=> <span key={i}>{i < hearts ? "♥" : "♡"}</span>)}</div>
+        <div className="hearts">{[0,1,2].map(i=> <Heart key={i} size={17} fill={i < hearts ? "currentColor" : "none"} />)}</div>
       </div>
 
       {finished === "win" && (
         <div className="game-card">
           <div className="end-screen">
-            <div className="big-emoji">🏆</div>
+            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
             <h3>Dictée terminée !</h3>
             <p>Tu as fait les {dictation.length} phrases.</p>
             <div className="xp-earned">+{xpGain} XP</div>
@@ -124,7 +125,7 @@ function DictationGame({ onClose, onFinish }){
       {finished === "lose" && (
         <div className="game-card">
           <div className="end-screen">
-            <div className="big-emoji">💔</div>
+            <div className="big-emoji"><HeartCrack size={44} strokeWidth={1.8}/></div>
             <h3>Plus de vies</h3>
             <p>Pas grave — recommence.</p>
             <div className="game-actions">
@@ -139,7 +140,7 @@ function DictationGame({ onClose, onFinish }){
         <div className={"game-card" + (answered ? (correct ? " card-pop" : " card-shake") : "")}>
           <div className="type-label">Dictée — écris ce que tu entends (ou lis)</div>
 
-          <button className="play-btn" onClick={()=> speak(item.ru, (status, detail)=>{ setAudioStatus(status); setAudioErrorDetail(detail||null); })}>🔊 Écouter la phrase</button>
+          <button className="play-btn" onClick={()=> speak(item.ru, (status, detail)=>{ setAudioStatus(status); setAudioErrorDetail(detail||null); })}><Volume2 size={16}/> Écouter la phrase</button>
           <button className="reveal-toggle" onClick={()=> setRevealed(r=>!r)}>{revealed ? "Cacher le texte" : "Afficher le texte russe"}</button>
           {audioStatus === "no-support" && (
             <p className="fix-note" style={{marginTop:10}}>Ton navigateur ne supporte pas la lecture audio. Utilise « Afficher le texte russe ».</p>
@@ -161,8 +162,8 @@ function DictationGame({ onClose, onFinish }){
             onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
           />
 
-          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")}>
-            {answered ? (correct ? "✓ Correct !" : "✗ Pas tout à fait") : ""}
+          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")} style={{display:"flex", alignItems:"center", justifyContent:"center", gap:6}}>
+            {answered && (correct ? <><CheckCircle2 size={18}/> Correct !</> : <><XCircle size={18}/> Pas tout à fait</>)}
           </div>
           <div className="game-explain">{answered && !correct ? "Réponse attendue : " + item.ru : ""}</div>
 

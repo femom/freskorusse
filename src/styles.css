@@ -37,6 +37,11 @@
    --accent-translation-soft: rgba(146, 112, 196, 0.16);
    --accent-bank: #D8B84A;
    --accent-bank-soft: rgba(216, 184, 74, 0.16);
+   --accent-phrases: #4FA37A;
+   --accent-phrases-soft: rgba(79, 163, 122, 0.16);
+   --accent-library-a: #6DB8E0;
+   --accent-library-b: #E0A75F;
+   --accent-library-c: #C46B6B;
 
    --ok: #3FC98A;
    --ok-soft: rgba(63, 201, 138, 0.14);
@@ -67,6 +72,11 @@
    --accent-translation-soft: #EFE9F6;
    --accent-bank: #B8860B;
    --accent-bank-soft: #F7EFD9;
+   --accent-phrases: #2E8B5C;
+   --accent-phrases-soft: #E3F3EA;
+   --accent-library-a: #2E6E96;
+   --accent-library-b: #B06E1F;
+   --accent-library-c: #A03E3E;
 
    --ok: #1F9A66;
    --ok-soft: #E4F5EC;
@@ -81,6 +91,21 @@
    ----------------------------------------------------------------------------- */
 * {
    box-sizing: border-box;
+   /* Supprime le halo bleu/gris que les navigateurs mobiles (surtout Android/Chrome)
+      affichent par défaut au tap sur un élément cliquable. On garde l'accessibilité
+      clavier intacte : voir la règle :focus-visible plus bas, qui redonne un contour
+      visible uniquement pour la navigation au clavier (pas au tap tactile). */
+   -webkit-tap-highlight-color: transparent;
+}
+
+/* Anneau de focus réservé à la navigation clavier (Tab), jamais au clic/tap souris
+   ou tactile — évite le halo disgracieux sur mobile tout en restant accessible. */
+:focus-visible {
+   outline: 2px solid var(--accent-cases);
+   outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+   outline: none;
 }
 
 html,
@@ -302,6 +327,39 @@ nav.side {
 .search-box:focus {
    outline: none;
    border-color: var(--ink-faint);
+}
+
+.search-icon {
+   position: absolute;
+   left: 12px;
+   top: 50%;
+   transform: translateY(-50%);
+   color: var(--ink-faint);
+   pointer-events: none;
+}
+.search-box-with-icon {
+   padding-left: 34px;
+}
+
+.install-btn {
+   margin: 0 6px 14px 6px;
+   padding: 9px 12px;
+   border-radius: var(--radius-sm);
+   border: 1px solid var(--accent-cases);
+   background: transparent;
+   color: var(--accent-cases);
+   font-size: 0.8rem;
+   font-weight: 700;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 7px;
+   transition: background-color .15s ease, color .15s ease;
+}
+.install-btn:hover {
+   background: var(--accent-cases);
+   color: #fff;
 }
 
 .search-results {
@@ -921,6 +979,10 @@ h2.verb-name {
    border-radius: 999px;
    cursor: pointer;
    transition: transform .1s ease, opacity .12s ease;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 7px;
 }
 
 .btn-start:hover {
@@ -1152,6 +1214,10 @@ h2.verb-name {
    background: var(--ink-faint);
    color: #fff;
    transition: transform .1s ease, opacity .12s ease;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   gap: 7px;
 }
 
 .btn-primary:disabled {
@@ -1613,4 +1679,63 @@ h2.verb-name {
 
 @media(max-width:800px){
    .flip-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+
+/* -----------------------------------------------------------------------------
+   PHRASES UTILES — liste directe (pas de flip : c'est un aide-mémoire consulté
+   au besoin, on veut voir la traduction tout de suite, pas la deviner).
+   ----------------------------------------------------------------------------- */
+.phrase-list{ display:flex; flex-direction:column; gap:10px; }
+.phrase-item{
+   display:grid;
+   grid-template-columns:1fr auto;
+   align-items:center;
+   gap:12px;
+   padding:14px 18px;
+}
+.phrase-ru{ font-weight:700; font-size:1.02rem; grid-column:1; grid-row:1; }
+.phrase-fr{ color:var(--ink-soft); font-size:0.86rem; grid-column:1; grid-row:2; }
+.phrase-play{
+   grid-column:2; grid-row:1 / span 2;
+   margin-bottom:0; padding:9px 14px; font-size:0.85rem;
+   background: var(--accent-phrases);
+}
+
+/* -----------------------------------------------------------------------------
+   BIBLIOTHÈQUE — carte de lecture avec badge de niveau (jamais choisi par
+   l'utilisateur, juste informatif une fois le texte tiré au hasard).
+   ----------------------------------------------------------------------------- */
+.library-card{ padding:26px 28px; margin-bottom:20px; }
+.library-level-badge{
+   display:inline-block;
+   font-size:0.72rem;
+   font-weight:800;
+   text-transform:uppercase;
+   letter-spacing:0.06em;
+   padding:5px 12px;
+   border-radius:999px;
+   border:1px solid;
+   margin-bottom:14px;
+}
+.library-title{ font-size:1.3rem; font-weight:800; margin:0 0 2px 0; }
+.library-title-fr{ font-size:0.85rem; color:var(--ink-faint); margin:0 0 18px 0; }
+.library-text{
+   font-size:1.08rem;
+   line-height:1.85;
+   margin-bottom:18px;
+}
+.library-text-fr{
+   font-size:0.92rem;
+   color:var(--ink-soft);
+   line-height:1.7;
+   background:var(--bg);
+   border-radius:var(--radius-sm);
+   padding:14px 16px;
+   margin-bottom:0;
+}
+
+@media(max-width:800px){
+   .phrase-item{ grid-template-columns:1fr auto; padding:12px 14px; }
+   .library-card{ padding:20px 18px; }
+   .library-text{ font-size:1rem; }
 }

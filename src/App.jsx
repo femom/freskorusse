@@ -1,13 +1,21 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import {
+  Home as HomeIcon, BookOpen, Repeat, Star, MessageCircle, BookMarked,
+  Volume2, Languages, ArrowLeft, MoreHorizontal, ChevronLeft, ChevronRight,
+  Moon, Sun, Search, X, Download,
+} from "lucide-react";
 import Home from "./pages/Home.jsx";
 import Cases from "./pages/Cases.jsx";
 import Verbs from "./pages/Verbs.jsx";
 import Bank from "./pages/Bank.jsx";
+import Phrases from "./pages/Phrases.jsx";
+import Library from "./pages/Library.jsx";
 import Dictation from "./pages/Dictation.jsx";
 import Translation from "./pages/Translation.jsx";
 import { cases, caseColors, caseAbbr } from "./data/cases.js";
 import { verbs, groupColor } from "./data/verbs.js";
 import { wordBank } from "./data/wordbank.js";
+import { phrases } from "./data/phrases.js";
 
 // Nom affiché de l'application (utilisé dans la barre latérale). Le nom "technique"
 // du projet (package.json, manifest PWA) reste "freskorusse" en minuscules, mais
@@ -19,14 +27,16 @@ const APP_NAME = "FreskoRusse";
 // de thème, donc adaptée automatiquement en mode clair/sombre) plutôt qu'un dégradé —
 // look plus sobre, et "home" reste neutre puisqu'il ne correspond à aucune catégorie.
 const MODULE_META = {
-  home: { label: "Accueil", icon: "◐", color: "var(--ink-faint)" },
-  cases: { label: "Les cas", icon: "Ф", color: "var(--accent-cases)" },
-  verbs: { label: "Conjugaison", icon: "Г", color: "var(--accent-verbs)" },
-  bank: { label: "Banque de mots", icon: "★", color: "var(--accent-bank)" },
-  dictation: { label: "Dictée", icon: "♪", color: "var(--accent-dictation)" },
+  home: { label: "Accueil", icon: HomeIcon, color: "var(--ink-faint)" },
+  cases: { label: "Les cas", icon: BookOpen, color: "var(--accent-cases)" },
+  verbs: { label: "Conjugaison", icon: Repeat, color: "var(--accent-verbs)" },
+  bank: { label: "Banque de mots", icon: Star, color: "var(--accent-bank)" },
+  phrases: { label: "Phrases utiles", icon: MessageCircle, color: "var(--accent-phrases)" },
+  library: { label: "Bibliothèque", icon: BookMarked, color: "var(--accent-library-b)" },
+  dictation: { label: "Dictée", icon: Volume2, color: "var(--accent-dictation)" },
   translation: {
     label: "Traduction",
-    icon: "⇄",
+    icon: Languages,
     color: "var(--accent-translation)",
   },
 };
@@ -87,6 +97,52 @@ export default function App() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // --- Installation PWA ---------------------------------------------------
+  // Chrome/Edge/Android déclenchent "beforeinstallprompt" quand l'app est
+  // installable et ne l'est pas encore. On empêche le mini-infobar automatique
+  // du navigateur (preventDefault) pour proposer NOTRE propre bouton à la place,
+  // au moment choisi par l'utilisateur plutôt qu'imposé par le navigateur.
+  // Limite connue : Safari/iOS ne déclenche jamais cet événement (Apple ne le
+  // supporte pas) — sur iOS, l'installation reste manuelle via Partager →
+  // "Sur l'écran d'accueil". Rien à faire côté code pour ce cas.
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    try {
+      return window.matchMedia("(display-mode: standalone)").matches
+        || window.navigator.standalone === true; // Safari/iOS déjà installé
+    } catch (e) {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    function handleBeforeInstallPrompt(event) {
+      event.preventDefault();
+      setInstallPrompt(event);
+    }
+    function handleAppInstalled() {
+      setInstallPrompt(null);
+      setIsInstalled(true);
+    }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  async function handleInstallClick() {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    // Que l'utilisateur accepte ou refuse, l'invite ne peut servir qu'une fois :
+    // on l'efface pour faire disparaître le bouton (il réapparaîtra si le
+    // navigateur en émet une nouvelle plus tard).
+    setInstallPrompt(null);
+    if (outcome === "accepted") setIsInstalled(true);
+  }
 
   function toggleTheme() {
     setTheme((t) => (t === "dark" ? "light" : "dark"));
@@ -211,6 +267,22 @@ export default function App() {
         });
       }
     });
+    phrases.forEach((p) => {
+      if (p.ru.toLowerCase().includes(q) || p.fr.toLowerCase().includes(q)) {
+        res.push({
+          cat: "Phrase",
+          label: p.fr,
+          action: () => navigate("phrases"),
+        });
+      }
+    });
+    if ("bibliothèque".includes(q) || "bibliotheque".includes(q) || "lecture".includes(q)) {
+      res.push({
+        cat: "Module",
+        label: "Bibliothèque",
+        action: () => navigate("library"),
+      });
+    }
     return res.slice(0, 12);
   }, [search]);
 
@@ -243,7 +315,7 @@ export default function App() {
               onClick={closeMobileMenu}
               aria-label="Fermer le menu"
             >
-              ✕
+              <X size={18}/>
             </button>
           ) : (
             <button
@@ -261,7 +333,7 @@ export default function App() {
                   : "Réduire la navigation"
               }
             >
-              {sidebarCollapsed ? "→" : "←"}
+              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
           )}
         </div>
@@ -270,7 +342,7 @@ export default function App() {
           <>
             <div className="xp-badge">
               <span className="lbl">Progression</span>
-              <span>⭐ {xp} XP</span>
+              <span><Star size={13} style={{verticalAlign:"-2px", marginRight:4}} fill="currentColor"/>{xp} XP</span>
             </div>
 
             <button
@@ -283,14 +355,29 @@ export default function App() {
                   : "Passer en mode sombre"
               }
             >
-              <span>{theme === "dark" ? "☾ Mode sombre" : "☀ Mode clair"}</span>
+              <span style={{display:"inline-flex", alignItems:"center", gap:6}}>
+                {theme === "dark" ? <Moon size={14}/> : <Sun size={14}/>}
+                {theme === "dark" ? "Mode sombre" : "Mode clair"}
+              </span>
               <span className="theme-toggle-dot" />
             </button>
 
+            {installPrompt && !isInstalled && (
+              <button
+                className="install-btn"
+                onClick={handleInstallClick}
+                title="Installer FreskoRusse sur cet appareil"
+              >
+                <Download size={15} />
+                <span>Installer l'application</span>
+              </button>
+            )}
+
             <div className="search-wrap">
+              <Search size={15} className="search-icon" aria-hidden="true" />
               <input
                 ref={searchRef}
-                className="search-box"
+                className="search-box search-box-with-icon"
                 placeholder="Rechercher un cas, un verbe..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -328,7 +415,7 @@ export default function App() {
                   title={m.label}
                 >
                   <span className="icon" style={{ background: m.color }}>
-                    {m.icon}
+                    <m.icon size={15} color="#fff" strokeWidth={2.4} />
                   </span>
                   {!compact && <span>{m.label}</span>}
                 </button>
@@ -420,7 +507,7 @@ export default function App() {
           onClick={handleMobileBack}
           disabled={!hasDetailOpen}
         >
-          {hasDetailOpen ? "←" : "⋯"}
+          {hasDetailOpen ? <ArrowLeft size={18} /> : <MoreHorizontal size={18} />}
         </button>
       </header>
 
@@ -457,6 +544,8 @@ export default function App() {
           />
         )}
         {module === "bank" && <Bank addXp={addXp} />}
+        {module === "phrases" && <Phrases />}
+        {module === "library" && <Library />}
         {module === "dictation" && <Dictation addXp={addXp} />}
         {module === "translation" && <Translation addXp={addXp} />}
       </main>

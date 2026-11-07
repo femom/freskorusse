@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { Shuffle } from "lucide-react";
 import { wordBank } from "../data/wordbank.js";
 import LessonEngine from "../components/LessonEngine.jsx";
 
@@ -86,7 +87,7 @@ export default function Bank({ addXp }){
             <div className="flip-card-face flip-card-back spotlight-front">{spotlight.fr}</div>
           </div>
         </div>
-        <button className="btn-start spotlight-shuffle" onClick={newSpotlight}>🔀 Un autre mot</button>
+        <button className="btn-start spotlight-shuffle" onClick={newSpotlight}><Shuffle size={16}/> Un autre mot</button>
       </div>
 
       <div className="lesson-launch" style={{"--lesson-accent":"var(--accent-bank)"}}>

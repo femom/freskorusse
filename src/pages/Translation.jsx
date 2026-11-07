@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { translation } from "../data/translation.js";
+import { X, Trophy, CheckCircle2, RotateCcw, Star } from "lucide-react";
 
 // Mélange un tableau sans le modifier (algorithme de Fisher-Yates).
 function shuffle(arr){
@@ -43,15 +44,15 @@ function TranslationGame({ onClose, onFinish }){
   return (
     <div className="game-overlay" style={{"--lesson-accent":"var(--accent-translation)"}}>
       <div className="game-top">
-        <button className="exit-btn" onClick={onClose}>✕</button>
+        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
         <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div style={{fontSize:"0.85rem", color:"var(--amber)", fontWeight:700}}>⭐ +{xpGain}</div>
+        <div style={{fontSize:"0.85rem", color:"var(--amber)", fontWeight:700, display:"flex", alignItems:"center", gap:4}}><Star size={14} fill="currentColor"/> +{xpGain}</div>
       </div>
 
       {finished ? (
         <div className="game-card">
           <div className="end-screen">
-            <div className="big-emoji">🏆</div>
+            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
             <h3>Série terminée !</h3>
             <p>15 phrases traduites et auto-évaluées.</p>
             <div className="xp-earned">+{xpGain} XP</div>
@@ -80,8 +81,8 @@ function TranslationGame({ onClose, onFinish }){
                 <>
                   <p style={{fontSize:"0.85rem", color:"var(--ink-soft)"}}>Compare avec ta réponse — sois honnête, c'est pour toi.</p>
                   <div className="game-actions">
-                    <button className="btn-primary" style={{background:"var(--green)"}} onClick={()=> grade("ok")}>✓ J'avais juste</button>
-                    <button className="btn-primary" style={{background:"var(--red)"}} onClick={()=> grade("bad")}>✗ À revoir</button>
+                    <button className="btn-primary" style={{background:"var(--green)"}} onClick={()=> grade("ok")}><CheckCircle2 size={16}/> J'avais juste</button>
+                    <button className="btn-primary" style={{background:"var(--red)"}} onClick={()=> grade("bad")}><RotateCcw size={16}/> À revoir</button>
                   </div>
                 </>
               ) : (
