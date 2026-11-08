@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { X, Heart, Trophy, HeartCrack, CheckCircle2, XCircle } from "lucide-react";
+import { Trophy, HeartCrack } from "lucide-react";
+import { normalize, shuffle } from "../lib/text.js";
+import GameShell, { Hearts, Feedback, EndScreen } from "./GameShell.jsx";
 
-// Normalise une réponse avant comparaison (casse, espaces, ё/е, ponctuation).
-function normalize(s){
-  return (s||"").trim().toLowerCase().replace(/ё/g,"е").replace(/[.,!?]/g,"");
-}
-// Mélange un tableau sans le modifier (algorithme de Fisher-Yates).
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-
-// Moteur de leçon générique réutilisé par les cas ET les verbes : 3 vies, XP,
-// questions "à trous" (type="type") ou à choix multiples (type="mcq").
+// Moteur de leçon générique réutilisé par les cas, les verbes ET la banque de
+// mots : 3 vies, XP, questions "à trous" (type="type") ou à choix multiples
+// (type="mcq").
 // `questions` : tableau de {type, prompt, base, options?, answer:[...]}
 // `onFinish(xpGagné)` est appelé une seule fois, quand la leçon est réussie.
 export default function LessonEngine({ questions, onClose, onFinish, title, accent }){
@@ -54,37 +46,34 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
   const progressPct = finished ? 100 : Math.round((pos/order.length)*100);
 
   return (
-    <div className="game-overlay" style={{"--lesson-accent": accent}}>
-      <div className="game-top">
-        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
-        <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div className="hearts">{[0,1,2].map(i=> <Heart key={i} size={17} fill={i < hearts ? "currentColor" : "none"} />)}</div>
-      </div>
-
+    <GameShell
+      title={title}
+      accent={accent}
+      progress={progressPct}
+      inProgress={!finished && (pos > 0 || answered)}
+      right={<Hearts count={hearts} />}
+      onClose={onClose}
+    >
       {finished === "win" && (
-        <div className="game-card">
-          <div className="end-screen">
-            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
-            <h3>Leçon terminée !</h3>
-            <p>Tu as répondu à toutes les questions.</p>
-            <div className="xp-earned">+{xpGain} XP</div>
-            <div className="game-actions"><button className="btn-primary continue" onClick={onClose}>Continuer</button></div>
-          </div>
-        </div>
+        <EndScreen
+          icon={Trophy}
+          title="Leçon terminée !"
+          message="Tu as répondu à toutes les questions."
+          xp={xpGain}
+          actions={[{ label: "Continuer", className: "continue", onClick: onClose }]}
+        />
       )}
 
       {finished === "lose" && (
-        <div className="game-card">
-          <div className="end-screen">
-            <div className="big-emoji"><HeartCrack size={44} strokeWidth={1.8}/></div>
-            <h3>Plus de vies</h3>
-            <p>Pas grave — recommence, tu vas y arriver.</p>
-            <div className="game-actions">
-              <button className="btn-primary ready" onClick={retry}>Réessayer</button>
-              <button className="btn-primary ghost" onClick={onClose}>Quitter</button>
-            </div>
-          </div>
-        </div>
+        <EndScreen
+          icon={HeartCrack}
+          title="Plus de vies"
+          message="Pas grave, recommence : tu vas y arriver."
+          actions={[
+            { label: "Réessayer", className: "ready", onClick: retry },
+            { label: "Quitter", className: "ghost", onClick: onClose },
+          ]}
+        />
       )}
 
       {!finished && q && (
@@ -101,7 +90,8 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
                   else if(opt === selected) cls += " wrong";
                 } else if(opt === selected) cls += " selected";
                 return (
-                  <button key={opt} className={cls} disabled={answered}
+                  <button type="button" key={opt} className={cls} disabled={answered}
+                    aria-pressed={!answered && opt === selected}
                     onClick={()=> setSelected(opt)}>
                     {opt}
                   </button>
@@ -109,35 +99,30 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
               })}
             </div>
           ) : (
-            <input ref={inputRef} type="text" className="answer-input" placeholder="ta réponse..." autoComplete="off"
+            <input ref={inputRef} type="text" className="answer-input" aria-label="Ta réponse" placeholder="ta réponse..." autoComplete="off" autoCapitalize="off" spellCheck={false}
               disabled={answered}
               onChange={(e)=> setSelected(e.target.value)}
               onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
             />
           )}
 
-          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")} style={{display:"flex", alignItems:"center", justifyContent:"center", gap:6}}>
-            {answered && (correct ? <><CheckCircle2 size={18}/> Correct !</> : <><XCircle size={18}/> Pas tout à fait</>)}
-          </div>
-          <div className="game-explain">
-            {answered && !correct ? "Réponse attendue : " + q.answer[0] : ""}
-          </div>
+          <Feedback answered={answered} correct={correct} expected={q.answer[0]} />
 
           <div className="game-actions">
             {!answered ? (
-              <button className={"btn-primary" + (selected && selected.trim() ? " ready" : "")}
+              <button type="button" className={"btn-primary" + (selected && selected.trim() ? " ready" : "")}
                 disabled={!selected || !selected.trim()}
                 onClick={()=> check(selected)}>
                 Vérifier
               </button>
             ) : (
-              <button className="btn-primary continue" onClick={advance}>
+              <button type="button" className="btn-primary continue" onClick={advance}>
                 {hearts <= 0 ? "Voir le résultat" : "Continuer"}
               </button>
             )}
           </div>
         </div>
       )}
-    </div>
+    </GameShell>
   );
 }

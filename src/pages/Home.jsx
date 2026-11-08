@@ -1,41 +1,55 @@
-import React from "react";
-import { BookOpen, Repeat, Star, MessageCircle, BookMarked, Volume2, Languages } from "lucide-react";
+import React, { useMemo } from "react";
+import { ArrowRight } from "lucide-react";
+import { Link, parseHash } from "../lib/router.jsx";
+import { readStorage, LAST_ROUTE_KEY } from "../lib/hooks.js";
+import { MODULES, describeRoute } from "../navigation.js";
 
-// Les 7 modules présentés en cartes sur la page d'accueil.
-// "key" doit correspondre aux clés utilisées dans App.jsx (MODULE_META) pour la navigation.
-const MODULES = [
-  {key:"cases", icon:BookOpen, color:"var(--accent-cases)", title:"Les cas russes", desc:"6 cas, terminaisons, exemples et leçons interactives."},
-  {key:"verbs", icon:Repeat, color:"var(--accent-verbs)", title:"Conjugaison", desc:"62 verbes essentiels — présent, passé, futur, 2 aspects."},
-  {key:"bank", icon:Star, color:"var(--accent-bank)", title:"Banque de mots", desc:"285 mots russes proches du français, en flashcards à retourner."},
-  {key:"phrases", icon:MessageCircle, color:"var(--accent-phrases)", title:"Phrases utiles", desc:"Visa, université, logement, vie quotidienne — pour ton arrivée."},
-  {key:"library", icon:BookMarked, color:"var(--accent-library-b)", title:"Bibliothèque", desc:"Un texte tiré au hasard, niveau surprise — débutant à avancé."},
-  {key:"dictation", icon:Volume2, color:"var(--accent-dictation)", title:"Dictée", desc:"Écoute ou lis une phrase russe, écris ce que tu entends."},
-  {key:"translation", icon:Languages, color:"var(--accent-translation)", title:"Traduction", desc:"Phrases FR ↔ RU, à ton rythme, auto-évaluées."},
-];
+// Les modules présentés en cartes : même liste que la navigation (navigation.js).
+const CARDS = MODULES.filter((m) => m.key !== "home");
 
-// Page d'accueil : titre, grille des modules cliquables, et footer avec les infos de l'auteur.
-export default function Home({ navigate, appName }){
+// Page d'accueil : « Reprendre » (dernier écran visité), grille des modules et
+// footer avec les infos de l'auteur. Chaque carte est un vrai lien.
+export default function Home({ appName }) {
+  // Dernier écran consulté, mémorisé par App : permet de reprendre en un tap.
+  const resume = useMemo(() => {
+    const hash = readStorage(LAST_ROUTE_KEY, "");
+    if (!hash) return null;
+    const route = parseHash(hash);
+    const info = describeRoute(route);
+    return info.resume ? { route, label: info.resume } : null;
+  }, []);
+
   return (
     <section>
       <h1 className="title">{appName || "FreskoRusse"}</h1>
-      <p className="subtitle">Ton espace d'entraînement complet : cas, conjugaison, dictée et traduction.</p>
+      <p className="subtitle">Ton espace d'entraînement complet : cas, conjugaison, vocabulaire, dictée et traduction.</p>
+
+      {resume && (
+        <Link to={resume.route.module} sub={resume.route.sub} className="card resume-card">
+          <div>
+            <div className="resume-kicker">Reprendre</div>
+            <div className="resume-label">{resume.label}</div>
+          </div>
+          <ArrowRight size={20} aria-hidden="true" />
+        </Link>
+      )}
 
       <div className="module-cards">
-        {MODULES.map(m=>(
-          <div className="card module-card" key={m.key} onClick={()=> navigate(m.key)}>
-            <span className="icon-lg" style={{background:m.color}}>
-              <m.icon size={22} color="#fff" strokeWidth={2.2} />
+        {CARDS.map((m) => (
+          <Link to={m.key} className="card module-card" key={m.key}>
+            <span className="icon-lg" style={{ background: m.color }}>
+              <m.icon size={22} strokeWidth={2.2} aria-hidden="true" />
             </span>
             <div>
-              <h4>{m.title}</h4>
+              <h2>{m.title}</h2>
               <p>{m.desc}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
       <footer className="home-footer">
-        <p>© {new Date().getFullYear()} Ferol EBATA-MOMBOULI — Développeur web fullstack</p>
+        <p>© {new Date().getFullYear()} Ferol EBATA-MOMBOULI · Développeur web fullstack</p>
         <p className="links">
           <a href="https://www.linkedin.com/in/ferol-jeansmy-ebata-mombouli" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <span className="sep">·</span>

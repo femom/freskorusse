@@ -184,7 +184,7 @@ export const verbs = [
   {id:"parler", fr:"Parler", icon:"🗣️",
     imp:{ru:"Говорить", group:2, present:["говорю","говоришь","говорит","говорим","говорите","говорят"], past:["говорил","говорила","говорило","говорили"]},
     perf:{ru:"Поговорить", group:2, future:["поговорю","поговоришь","поговорит","поговорим","поговорите","поговорят"], past:["поговорил","поговорила","поговорило","поговорили"]},
-    note:"Le même verbe «говорить» sert pour « dire » (avec сказать) et pour « parler/discuter » (avec поговорить) — le perfectif choisi dépend du sens."
+    note:"Le même verbe «говорить» sert pour « dire » (avec сказать) et pour « parler/discuter » (avec поговорить) : le perfectif choisi dépend du sens."
   },
   {id:"sprashivat", fr:"Demander (une question)", icon:"❓",
     imp:{ru:"Спрашивать", group:1, present:["спрашиваю","спрашиваешь","спрашивает","спрашиваем","спрашиваете","спрашивают"], past:["спрашивал","спрашивала","спрашивало","спрашивали"]},
@@ -194,12 +194,12 @@ export const verbs = [
   {id:"idti", fr:"Aller (à pied)", icon:"🚶",
     imp:{ru:"Идти", group:1, present:["иду","идёшь","идёт","идём","идёте","идут"], past:["шёл","шла","шло","шли"]},
     perf:{ru:"Пойти", group:1, future:["пойду","пойдёшь","пойдёт","пойдём","пойдёте","пойдут"], past:["пошёл","пошла","пошло","пошли"]},
-    note:"Le passé de «идти» est totalement irrégulier : шёл, шла, шло, шли — aucun lien visible avec l'infinitif."
+    note:"Le passé de «идти» est totalement irrégulier : шёл, шла, шло, шли. Aucun lien visible avec l'infinitif."
   },
   {id:"ehat", fr:"Aller (en transport)", icon:"🚗",
     imp:{ru:"Ехать", group:1, present:["еду","едешь","едет","едем","едете","едут"], past:["ехал","ехала","ехало","ехали"]},
     perf:{ru:"Поехать", group:1, future:["поеду","поедешь","поедет","поедем","поедете","поедут"], past:["поехал","поехала","поехало","поехали"]},
-    note:"Le radical du présent (ед-) ne ressemble pas à l'infinitif (ехать) — une exception à mémoriser."
+    note:"Le radical du présent (ед-) ne ressemble pas à l'infinitif (ехать) : c'est une exception à mémoriser."
   },
   {id:"prihodit", fr:"Venir (à pied)", icon:"🚶‍♂️",
     imp:{ru:"Приходить", group:2, present:["прихожу","приходишь","приходит","приходим","приходите","приходят"], past:["приходил","приходила","приходило","приходили"]},
@@ -244,7 +244,7 @@ export const verbs = [
   {id:"prodavat", fr:"Vendre", icon:"🏷️",
     imp:{ru:"Продавать", group:1, present:["продаю","продаёшь","продаёт","продаём","продаёте","продают"], past:["продавал","продавала","продавало","продавали"]},
     perf:{ru:"Продать", group:"irr", future:["продам","продашь","продаст","продадим","продадите","продадут"], past:["продал","продала","продало","продали"]},
-    note:"«Продать» se conjugue comme «дать» — un paradigme irrégulier partagé par très peu de verbes."
+    note:"«Продать» se conjugue comme «дать» : un paradigme irrégulier partagé par très peu de verbes."
   },
   {id:"platit", fr:"Payer", icon:"💳",
     imp:{ru:"Платить", group:2, present:["плачу","платишь","платит","платим","платите","платят"], past:["платил","платила","платило","платили"]},

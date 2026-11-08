@@ -1,73 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { dictation } from "../data/dictation.js";
-import { X, Heart, Trophy, HeartCrack, Volume2, CheckCircle2, XCircle } from "lucide-react";
-
-// Normalise une chaîne pour comparer les réponses sans être trop strict :
-// espaces superflus, casse, ё/е (souvent confondus à l'écrit) et ponctuation ignorés.
-function normalize(s){
-  return (s||"").trim().toLowerCase().replace(/ё/g,"е").replace(/[.,!?]/g,"");
-}
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
-
-// Fait lire une phrase russe à voix haute via l'API du navigateur (Web Speech API).
-// Ne nécessite pas internet, mais dépend des voix installées sur l'appareil.
-//
-// Deux pièges classiques corrigés ici :
-// 1) `getVoices()` peut renvoyer un tableau VIDE au premier appel, le temps que
-//    le navigateur charge sa liste de voix en arrière-plan (surtout Chrome/Edge).
-//    On écoute donc l'évènement "voiceschanged" pour réessayer une fois prêtes.
-// 2) Si aucune voix russe n'est installée sur l'appareil, on le signale
-//    clairement (au lieu de laisser le bouton "Écouter" ne rien faire, ou pire,
-//    de tenter une lecture incompréhensible avec une voix anglaise/française).
-//
-// `onStatus(status)` reçoit : "ok" | "no-support" | "no-russian-voice" | "error"
-let cachedVoices = [];
-if(typeof window !== "undefined" && "speechSynthesis" in window){
-  cachedVoices = window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => {
-    cachedVoices = window.speechSynthesis.getVoices();
-  };
-}
-
-function speak(text, onStatus){
-  if(!(typeof window !== "undefined" && "speechSynthesis" in window)){
-    onStatus && onStatus("no-support");
-    return;
-  }
-  try{
-    // Contournement d'un bug connu de Chrome : appeler cancel() puis speak()
-    // immédiatement dans le même tick peut faire échouer la NOUVELLE lecture
-    // (l'utterance part en erreur "interrupted"/"canceled"). On n'annule donc
-    // que s'il y a réellement quelque chose en cours.
-    window.speechSynthesis.resume();
-    if(window.speechSynthesis.speaking || window.speechSynthesis.pending){
-      window.speechSynthesis.cancel();
-    }
-
-    const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
-    const ruVoice = voices.find(v=> v.lang && v.lang.toLowerCase().startsWith("ru"));
-
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "ru-RU";
-    if(ruVoice) u.voice = ruVoice;
-    u.onerror = (e) => onStatus && onStatus("error", e && e.error);
-    u.onend = () => onStatus && onStatus("ok");
-
-    // speak() doit être appelé de façon quasi synchrone après un clic pour ne
-    // pas se faire bloquer par les navigateurs qui exigent un geste utilisateur.
-    window.speechSynthesis.speak(u);
-    onStatus && onStatus(ruVoice ? "ok" : "no-russian-voice");
-  }catch(e){
-    onStatus && onStatus("error");
-  }
-}
+import { Trophy, HeartCrack, Volume2 } from "lucide-react";
+import { normalize, shuffle } from "../lib/text.js";
+import { speak } from "../lib/speech.js";
+import GameShell, { Hearts, Feedback, EndScreen } from "../components/GameShell.jsx";
 
 // Déroulé complet d'une session de dictée : tirage aléatoire des phrases, gestion
 // des cœurs/XP, écoute + révélation du texte, saisie et vérification.
+// (La synthèse vocale est dans lib/speech.js, partagée avec les Phrases utiles.)
 function DictationGame({ onClose, onFinish }){
   const [order] = useState(()=> shuffle(dictation.map((_,i)=>i)));
   const [pos, setPos] = useState(0);
@@ -76,6 +16,7 @@ function DictationGame({ onClose, onFinish }){
   const [answered, setAnswered] = useState(false);
   const [correct, setCorrect] = useState(null);
   const [revealed, setRevealed] = useState(false);
+  const [typed, setTyped] = useState("");
   const [audioStatus, setAudioStatus] = useState(null); // null | "no-support" | "no-russian-voice" | "error"
   const [audioErrorDetail, setAudioErrorDetail] = useState(null);
   const [finished, setFinished] = useState(null);
@@ -84,7 +25,7 @@ function DictationGame({ onClose, onFinish }){
   const item = dictation[order[pos]];
 
   useEffect(()=>{
-    setAnswered(false); setCorrect(null); setRevealed(false);
+    setAnswered(false); setCorrect(null); setRevealed(false); setTyped("");
     if(inputRef.current) inputRef.current.value = "";
     if(inputRef.current) inputRef.current.focus();
   }, [pos]);
@@ -99,84 +40,82 @@ function DictationGame({ onClose, onFinish }){
     if(pos+1 >= order.length){ setFinished("win"); onFinish(xpGain); return; }
     setPos(p=>p+1);
   }
-  function retry(){ setPos(0); setHearts(3); setXpGain(0); setAnswered(false); setCorrect(null); setRevealed(false); setFinished(null); }
+  function retry(){ setPos(0); setHearts(3); setXpGain(0); setAnswered(false); setCorrect(null); setRevealed(false); setTyped(""); setFinished(null); }
 
   const progressPct = finished ? 100 : Math.round((pos/order.length)*100);
 
   return (
-    <div className="game-overlay" style={{"--lesson-accent":"var(--accent-dictation)"}}>
-      <div className="game-top">
-        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
-        <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div className="hearts">{[0,1,2].map(i=> <Heart key={i} size={17} fill={i < hearts ? "currentColor" : "none"} />)}</div>
-      </div>
-
+    <GameShell
+      title="Dictée"
+      accent="var(--accent-dictation)"
+      progress={progressPct}
+      inProgress={!finished && (pos > 0 || answered || typed.trim().length > 0)}
+      right={<Hearts count={hearts} />}
+      onClose={onClose}
+    >
       {finished === "win" && (
-        <div className="game-card">
-          <div className="end-screen">
-            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
-            <h3>Dictée terminée !</h3>
-            <p>Tu as fait les {dictation.length} phrases.</p>
-            <div className="xp-earned">+{xpGain} XP</div>
-            <div className="game-actions"><button className="btn-primary continue" onClick={onClose}>Continuer</button></div>
-          </div>
-        </div>
+        <EndScreen
+          icon={Trophy}
+          title="Dictée terminée !"
+          message={`Tu as fait les ${dictation.length} phrases.`}
+          xp={xpGain}
+          actions={[{ label: "Continuer", className: "continue", onClick: onClose }]}
+        />
       )}
       {finished === "lose" && (
-        <div className="game-card">
-          <div className="end-screen">
-            <div className="big-emoji"><HeartCrack size={44} strokeWidth={1.8}/></div>
-            <h3>Plus de vies</h3>
-            <p>Pas grave — recommence.</p>
-            <div className="game-actions">
-              <button className="btn-primary ready" onClick={retry}>Réessayer</button>
-              <button className="btn-primary ghost" onClick={onClose}>Quitter</button>
-            </div>
-          </div>
-        </div>
+        <EndScreen
+          icon={HeartCrack}
+          title="Plus de vies"
+          message="Pas grave, recommence."
+          actions={[
+            { label: "Réessayer", className: "ready", onClick: retry },
+            { label: "Quitter", className: "ghost", onClick: onClose },
+          ]}
+        />
       )}
 
       {!finished && item && (
         <div className={"game-card" + (answered ? (correct ? " card-pop" : " card-shake") : "")}>
-          <div className="type-label">Dictée — écris ce que tu entends (ou lis)</div>
+          <div className="type-label">Dictée : écris ce que tu entends (ou lis)</div>
 
-          <button className="play-btn" onClick={()=> speak(item.ru, (status, detail)=>{ setAudioStatus(status); setAudioErrorDetail(detail||null); })}><Volume2 size={16}/> Écouter la phrase</button>
-          <button className="reveal-toggle" onClick={()=> setRevealed(r=>!r)}>{revealed ? "Cacher le texte" : "Afficher le texte russe"}</button>
-          {audioStatus === "no-support" && (
-            <p className="fix-note" style={{marginTop:10}}>Ton navigateur ne supporte pas la lecture audio. Utilise « Afficher le texte russe ».</p>
-          )}
-          {audioStatus === "no-russian-voice" && (
-            <p className="fix-note" style={{marginTop:10}}>Aucune voix russe installée sur cet appareil — la prononciation peut être approximative. Utilise « Afficher le texte russe » en complément.</p>
-          )}
-          {audioStatus === "error" && (
-            <p className="fix-note" style={{marginTop:10}}>
-              La lecture audio a échoué{audioErrorDetail ? ` (code : ${audioErrorDetail})` : ""}. Utilise « Afficher le texte russe ».
-            </p>
-          )}
-          {revealed && <div className="revealed-text">{item.ru}</div>}
+          <button type="button" className="play-btn" onClick={()=> speak(item.ru, (status, detail)=>{ setAudioStatus(status); setAudioErrorDetail(detail||null); })}><Volume2 size={16} aria-hidden="true"/> Écouter la phrase</button>
+          <button type="button" className="reveal-toggle" aria-expanded={revealed} onClick={()=> setRevealed(r=>!r)}>{revealed ? "Cacher le texte" : "Afficher le texte russe"}</button>
+          <div role="status" aria-live="polite">
+            {audioStatus === "no-support" && (
+              <p className="fix-note audio-note">Ton navigateur ne supporte pas la lecture audio. Utilise « Afficher le texte russe ».</p>
+            )}
+            {audioStatus === "no-russian-voice" && (
+              <p className="fix-note audio-note">Aucune voix russe n'est installée sur cet appareil : la prononciation peut être approximative. Utilise « Afficher le texte russe » en complément.</p>
+            )}
+            {audioStatus === "error" && (
+              <p className="fix-note audio-note">
+                La lecture audio a échoué{audioErrorDetail ? ` (code : ${audioErrorDetail})` : ""}. Utilise « Afficher le texte russe ».
+              </p>
+            )}
+          </div>
+          {revealed && <div className="revealed-text" lang="ru">{item.ru}</div>}
 
-          <div className="q-ru" style={{marginTop:16}}>{item.fr}<span className="b">Traduction — écris la phrase russe correspondante</span></div>
+          <div className="q-ru dictation-prompt">{item.fr}<span className="b">Traduction : écris la phrase russe correspondante</span></div>
 
-          <input ref={inputRef} type="text" className="answer-input" placeholder="ta réponse en russe..." autoComplete="off"
+          <input ref={inputRef} type="text" className="answer-input" lang="ru" aria-label="Ta réponse en russe" placeholder="ta réponse en russe..." autoComplete="off" autoCapitalize="off" spellCheck={false}
             disabled={answered}
+            onChange={(e)=> setTyped(e.target.value)}
             onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
           />
 
-          <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")} style={{display:"flex", alignItems:"center", justifyContent:"center", gap:6}}>
-            {answered && (correct ? <><CheckCircle2 size={18}/> Correct !</> : <><XCircle size={18}/> Pas tout à fait</>)}
-          </div>
-          <div className="game-explain">{answered && !correct ? "Réponse attendue : " + item.ru : ""}</div>
+          <Feedback answered={answered} correct={correct} expected={item.ru} />
 
           <div className="game-actions">
             {!answered ? (
-              <button className="btn-primary ready" onClick={()=> check(inputRef.current.value)}>Vérifier</button>
+              // Désactivé tant que le champ est vide : avant, un tap à vide coûtait une vie.
+              <button type="button" className={"btn-primary" + (typed.trim() ? " ready" : "")} disabled={!typed.trim()} onClick={()=> check(inputRef.current.value)}>Vérifier</button>
             ) : (
-              <button className="btn-primary continue" onClick={advance}>{hearts<=0 ? "Voir le résultat" : "Continuer"}</button>
+              <button type="button" className="btn-primary continue" onClick={advance}>{hearts<=0 ? "Voir le résultat" : "Continuer"}</button>
             )}
           </div>
         </div>
       )}
-    </div>
+    </GameShell>
   );
 }
 
@@ -190,15 +129,15 @@ export default function Dictation({ addXp }){
       <p className="subtitle">Écoute (ou lis) une phrase russe, puis écris-la en cyrillique.</p>
 
       <div className="card usage-card">
-        <p>La voix utilise le moteur de synthèse vocale de ton navigateur/téléphone — la qualité et la disponibilité d'une voix russe varient selon l'appareil. Si l'audio ne fonctionne pas ou ne te suffit pas, utilise « Afficher le texte russe » pour t'entraîner quand même.</p>
+        <p>La voix utilise le moteur de synthèse vocale de ton navigateur ou téléphone : la qualité et la disponibilité d'une voix russe varient selon l'appareil. Si l'audio ne fonctionne pas ou ne te suffit pas, utilise « Afficher le texte russe » pour t'entraîner quand même.</p>
       </div>
 
       <div className="lesson-launch" style={{"--lesson-accent":"var(--accent-dictation)"}}>
         <div className="info">
-          <h4>{dictation.length} phrases — premier lot</h4>
+          <h2>{dictation.length} phrases, premier lot</h2>
           <p>Écoute ou lis, puis transcris. 3 vies, XP à la clé.</p>
         </div>
-        <button className="btn-start" onClick={()=> setOpen(true)}>Démarrer la dictée ▶</button>
+        <button type="button" className="btn-start" onClick={()=> setOpen(true)}>Démarrer la dictée ▶</button>
       </div>
 
       {open && <DictationGame onClose={()=> setOpen(false)} onFinish={(xp)=> addXp(xp)} />}

@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import { translation } from "../data/translation.js";
-import { X, Trophy, CheckCircle2, RotateCcw, Star } from "lucide-react";
+import { Trophy, CheckCircle2, RotateCcw, Star } from "lucide-react";
+import { shuffle } from "../lib/text.js";
+import GameShell, { EndScreen } from "../components/GameShell.jsx";
 
-// Mélange un tableau sans le modifier (algorithme de Fisher-Yates).
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  return a;
-}
+const SESSION_SIZE = Math.min(15, translation.length);
 
-// Session de traduction en mode "flashcard auto-évaluée" : on tire 15 phrases au
-// hasard, chacune dans un sens aléatoire (FR->RU ou RU->FR). Comme une traduction a
-// souvent plusieurs formulations correctes, il n'y a pas de correction automatique
-// stricte : l'utilisateur compare lui-même sa tentative à la référence affichée.
+// Session de traduction en mode "flashcard auto-évaluée" : on tire SESSION_SIZE
+// phrases au hasard, chacune dans un sens aléatoire (FR->RU ou RU->FR). Comme une
+// traduction a souvent plusieurs formulations correctes, il n'y a pas de correction
+// automatique stricte : l'utilisateur compare lui-même sa tentative à la référence.
 function TranslationGame({ onClose, onFinish }){
-  const [order] = useState(()=> shuffle(translation.map((_,i)=>i)).slice(0, 15));
+  const [order] = useState(()=> shuffle(translation.map((_,i)=>i)).slice(0, SESSION_SIZE));
   const [directions] = useState(()=> order.map(()=> Math.random() < 0.5 ? "fr2ru" : "ru2fr"));
   const [pos, setPos] = useState(0);
   const [xpGain, setXpGain] = useState(0);
@@ -42,57 +39,56 @@ function TranslationGame({ onClose, onFinish }){
   const progressPct = finished ? 100 : Math.round((pos/order.length)*100);
 
   return (
-    <div className="game-overlay" style={{"--lesson-accent":"var(--accent-translation)"}}>
-      <div className="game-top">
-        <button className="exit-btn" onClick={onClose}><X size={18}/></button>
-        <div className="progress-track"><div className="progress-fill" style={{width:progressPct+"%"}}/></div>
-        <div style={{fontSize:"0.85rem", color:"var(--amber)", fontWeight:700, display:"flex", alignItems:"center", gap:4}}><Star size={14} fill="currentColor"/> +{xpGain}</div>
-      </div>
-
+    <GameShell
+      title="Traduction"
+      accent="var(--accent-translation)"
+      progress={progressPct}
+      inProgress={!finished && (pos > 0 || revealed || attempt.trim().length > 0)}
+      right={<div className="xp-live" aria-label={`${xpGain} XP gagnés`}><Star size={14} fill="currentColor" aria-hidden="true"/> +{xpGain}</div>}
+      onClose={onClose}
+    >
       {finished ? (
-        <div className="game-card">
-          <div className="end-screen">
-            <div className="big-emoji"><Trophy size={44} strokeWidth={1.8}/></div>
-            <h3>Série terminée !</h3>
-            <p>15 phrases traduites et auto-évaluées.</p>
-            <div className="xp-earned">+{xpGain} XP</div>
-            <div className="game-actions"><button className="btn-primary continue" onClick={onClose}>Continuer</button></div>
-          </div>
-        </div>
+        <EndScreen
+          icon={Trophy}
+          title="Série terminée !"
+          message={`${order.length} phrases traduites et auto-évaluées.`}
+          xp={xpGain}
+          actions={[{ label: "Continuer", className: "continue", onClick: onClose }]}
+        />
       ) : (
         <div className="game-card">
           <div className="flash-side">{dirLabel}</div>
-          <div className="flash-prompt">{prompt}</div>
+          <div className="flash-prompt" lang={dir === "fr2ru" ? "fr" : "ru"}>{prompt}</div>
 
           {!revealed && (
             <>
-              <input type="text" className="answer-input" placeholder="ta traduction (à l'oral ou à l'écrit)..." autoComplete="off"
+              <input type="text" className="answer-input" aria-label="Ta traduction" lang={dir === "fr2ru" ? "ru" : "fr"} placeholder="ta traduction (à l'oral ou à l'écrit)..." autoComplete="off" autoCapitalize="off" spellCheck={false}
                 value={attempt} onChange={e=>setAttempt(e.target.value)}
                 onKeyDown={(e)=>{ if(e.key==="Enter") reveal(); }}
               />
-              <div className="game-actions"><button className="btn-primary ready" onClick={reveal}>Voir la traduction</button></div>
+              <div className="game-actions"><button type="button" className="btn-primary ready" onClick={reveal}>Voir la traduction</button></div>
             </>
           )}
 
           {revealed && (
             <>
-              <div className="flash-answer">{answer}</div>
+              <div className="flash-answer" lang={dir === "fr2ru" ? "ru" : "fr"}>{answer}</div>
               {!graded ? (
                 <>
-                  <p style={{fontSize:"0.85rem", color:"var(--ink-soft)"}}>Compare avec ta réponse — sois honnête, c'est pour toi.</p>
+                  <p className="grade-hint">Compare avec ta réponse et sois honnête, c'est pour toi.</p>
                   <div className="game-actions">
-                    <button className="btn-primary" style={{background:"var(--green)"}} onClick={()=> grade("ok")}><CheckCircle2 size={16}/> J'avais juste</button>
-                    <button className="btn-primary" style={{background:"var(--red)"}} onClick={()=> grade("bad")}><RotateCcw size={16}/> À revoir</button>
+                    <button type="button" className="btn-primary btn-ok" onClick={()=> grade("ok")}><CheckCircle2 size={16} aria-hidden="true"/> J'avais juste</button>
+                    <button type="button" className="btn-primary btn-bad" onClick={()=> grade("bad")}><RotateCcw size={16} aria-hidden="true"/> À revoir</button>
                   </div>
                 </>
               ) : (
-                <div className="game-actions"><button className="btn-primary continue" onClick={next}>Continuer</button></div>
+                <div className="game-actions"><button type="button" className="btn-primary continue" onClick={next}>Continuer</button></div>
               )}
             </>
           )}
         </div>
       )}
-    </div>
+    </GameShell>
   );
 }
 
@@ -102,18 +98,18 @@ export default function Translation({ addXp }){
   return (
     <section>
       <h1 className="title">Traduction</h1>
-      <p className="subtitle">50 phrases du quotidien, français ↔ russe, tirées au hasard.</p>
+      <p className="subtitle">{translation.length} phrases du quotidien, français ↔ russe, tirées au hasard.</p>
 
       <div className="card usage-card">
-        <p>Pas de correcteur automatique strict ici — une traduction a souvent plusieurs formulations valables. Tu tapes ton essai, tu vois la référence, et tu t'auto-évalues honnêtement.</p>
+        <p>Pas de correcteur automatique strict ici : une traduction a souvent plusieurs formulations valables. Tu tapes ton essai, tu vois la référence, et tu t'auto-évalues honnêtement.</p>
       </div>
 
       <div className="lesson-launch" style={{"--lesson-accent":"var(--accent-translation)"}}>
         <div className="info">
-          <h4>15 phrases — sens aléatoire</h4>
+          <h2>{SESSION_SIZE} phrases, sens aléatoire</h2>
           <p>Français→russe ou russe→français, mélangés à chaque série.</p>
         </div>
-        <button className="btn-start" onClick={()=> setOpen(true)}>Démarrer la série ▶</button>
+        <button type="button" className="btn-start" onClick={()=> setOpen(true)}>Démarrer la série ▶</button>
       </div>
 
       {open && <TranslationGame onClose={()=> setOpen(false)} onFinish={(xp)=> addXp(xp)} />}

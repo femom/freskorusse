@@ -4,6 +4,11 @@ import {
   REGULAR_ENDING_LENGTHS, IRREGULAR_ENDING_LENGTHS, ASPECT_TAGLINE,
 } from "../data/verbs.js";
 import LessonEngine from "../components/LessonEngine.jsx";
+import Breadcrumb from "../components/Breadcrumb.jsx";
+import Pager from "../components/Pager.jsx";
+import { Link } from "../lib/router.jsx";
+import { shuffle } from "../lib/text.js";
+import { badgeColors, legible } from "../lib/color.js";
 
 // Construit dynamiquement la banque de questions pour la "leçon globale" des verbes,
 // directement à partir des données de conjugaison (aucune question écrite à la main :
@@ -12,23 +17,23 @@ function buildQuestionPool(){
   const pool = [];
   verbs.forEach(v=>{
     if(v.imp.present){
-      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} — présent — ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.present[i]]}));
+      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} · présent · ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.present[i]]}));
     }
     if(v.imp.future){
-      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} — futur — ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.future[i]]}));
+      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} · futur · ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.future[i]]}));
     }
     if(v.perf){
-      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.perf.ru} — futur — ${p}`, base:`${v.fr} (perfectif)`, answer:[v.perf.future[i]]}));
+      PRON.forEach((p,i)=> pool.push({type:"type", prompt:`${v.perf.ru} · futur · ${p}`, base:`${v.fr} (perfectif)`, answer:[v.perf.future[i]]}));
     }
-    PAST_LBL.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} — passé — ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.past[i]]}));
+    PAST_LBL.forEach((p,i)=> pool.push({type:"type", prompt:`${v.imp.ru} · passé · ${p}`, base:`${v.fr} (imperfectif)`, answer:[v.imp.past[i]]}));
     if(v.perf){
-      PAST_LBL.forEach((p,i)=> pool.push({type:"type", prompt:`${v.perf.ru} — passé — ${p}`, base:`${v.fr} (perfectif)`, answer:[v.perf.past[i]]}));
+      PAST_LBL.forEach((p,i)=> pool.push({type:"type", prompt:`${v.perf.ru} · passé · ${p}`, base:`${v.fr} (perfectif)`, answer:[v.perf.past[i]]}));
     }
   });
   return pool;
 }
 const questionPool = buildQuestionPool();
-function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+const PAGER_ITEMS = verbs.map((v)=> ({ key: v.id, label: v.fr }));
 
 // ---------------------------------------------------------------------------
 // Découpage "radical / terminaison" pour la coloration des tableaux, façon
@@ -90,7 +95,7 @@ function PastRow({ pron, word, color }){
 
 // Page "Conjugaison". Comme pour les cas : sans sélection -> liste + leçon globale,
 // avec sélection -> détail complet d'un verbe (présent, futur, passé).
-export default function Verbs({ selected, onSelect, addXp }){
+export default function Verbs({ selected, addXp }){
   const [lessonOpen, setLessonOpen] = useState(false);
   const [filter, setFilter] = useState("");
   const active = verbs.find(v=>v.id===selected);
@@ -107,33 +112,37 @@ export default function Verbs({ selected, onSelect, addXp }){
     return (
       <section>
         <h1 className="title">Les verbes russes</h1>
-        <p className="subtitle">62 verbes essentiels — clique sur un verbe pour voir sa conjugaison complète.</p>
+        <p className="subtitle">{verbs.length} verbes essentiels : ouvre un verbe pour voir sa conjugaison complète.</p>
 
         <div className="lesson-launch" style={{"--lesson-accent":"var(--accent-verbs)"}}>
           <div className="info">
-            <h4>Leçon interactive</h4>
-            <p>12 questions tirées au hasard parmi les 62 verbes. 3 vies.</p>
+            <h2>Leçon interactive</h2>
+            <p>12 questions tirées au hasard parmi les {verbs.length} verbes. 3 vies.</p>
           </div>
-          <button className="btn-start" onClick={()=> setLessonOpen(true)}>Démarrer la leçon ▶</button>
+          <button type="button" className="btn-start" onClick={()=> setLessonOpen(true)}>Démarrer la leçon ▶</button>
         </div>
 
-        <h3 className="block-title">Comment lire les tableaux</h3>
+        <h2 className="block-title">Comment lire les tableaux</h2>
         <div className="card usage-card">
           <p><b>Imperfectif</b> = action habituelle, en cours, répétée. Il a un présent, et son futur se construit avec буду/будешь… + l'infinitif.</p>
-          <p><b>Perfectif</b> = action ponctuelle, achevée, avec un résultat. Il n'a pas de présent — sa forme conjuguée exprime directement le futur.</p>
-          <p>Dans les tableaux, seule la <b>terminaison</b> (la partie qui change selon la personne) est colorée — le radical reste neutre.</p>
+          <p><b>Perfectif</b> = action ponctuelle, achevée, avec un résultat. Il n'a pas de présent : sa forme conjuguée exprime directement le futur.</p>
+          <p>Dans les tableaux, seule la <b>terminaison</b> (la partie qui change selon la personne) est colorée ; le radical reste neutre.</p>
         </div>
 
-        <h3 className="block-title">Tous les verbes ({verbs.length})</h3>
-        <input className="search-box" style={{marginBottom:14, maxWidth:320}} placeholder="Filtrer les verbes..." value={filter} onChange={e=>setFilter(e.target.value)}/>
+        <h2 className="block-title">Tous les verbes ({filtered.length === verbs.length ? verbs.length : `${filtered.length} sur ${verbs.length}`})</h2>
+        <input type="search" className="search-box filter-input" aria-label="Filtrer les verbes" placeholder="Filtrer les verbes (français ou russe)…" value={filter} onChange={e=>setFilter(e.target.value)}/>
         <div className="verb-cards">
-          {filtered.map(v=>(
-            <div className="card verb-card" key={v.id} onClick={()=> onSelect(v.id)}>
-              <span className="badge" style={{background:groupColor[v.imp.group]}}>{v.imp.group === "irr" ? "!" : v.imp.group}</span>
-              <div><div className="fr">{v.fr}</div><div className="ru">{v.imp.ru}{v.perf ? " / "+v.perf.ru : ""}</div></div>
-            </div>
-          ))}
+          {filtered.map(v=>{
+            const bg = groupColor[v.imp.group];
+            return (
+              <Link to="verbs" sub={v.id} className="card verb-card" key={v.id}>
+                <span className="badge" style={badgeColors(bg)}>{v.imp.group === "irr" ? "!" : v.imp.group}</span>
+                <div><div className="fr">{v.fr}</div><div className="ru" lang="ru">{v.imp.ru}{v.perf ? " / "+v.perf.ru : ""}</div></div>
+              </Link>
+            );
+          })}
         </div>
+        {filtered.length === 0 && <p className="full-note" role="status">Aucun verbe ne correspond à « {filter.trim()} ».</p>}
 
         {lessonOpen && (
           <LessonEngine
@@ -149,7 +158,8 @@ export default function Verbs({ selected, onSelect, addXp }){
   }
 
   // --- Détail d'un verbe précis ------------------------------------------------
-  const col = groupColor[active.imp.group];
+  // Couleur de TEXTE lisible dans les deux thèmes (la couleur pure reste réservée aux badges).
+  const col = legible(groupColor[active.imp.group], 60);
   // Le futur composé de l'imperfectif (буду/будешь...) n'est jamais "coupé" :
   // on colore l'auxiliaire en entier (c'est lui qui porte toute la conjugaison),
   // l'infinitif est affiché une seule fois, au centre, comme dans le document source.
@@ -157,13 +167,15 @@ export default function Verbs({ selected, onSelect, addXp }){
 
   return (
     <section>
+      <Breadcrumb to="verbs" parentLabel="Les verbes" current={active.fr} />
+
       <div className="verb-header">
         {/* Icône thématique à la place d'une photo : garde l'app 100% hors-ligne
             et évite de réutiliser des images qui ne nous appartiennent pas. */}
-        <span className="verb-icon-frame">{active.icon || "📌"}</span>
+        <span className="verb-icon-frame" aria-hidden="true">{active.icon || "📌"}</span>
         <div>
-          <h2 className="verb-name">{active.fr}</h2>
-          <div className="verb-sub">{active.imp.ru}{active.perf ? ` (imperfectif) — ${active.perf.ru} (perfectif)` : " (imperfectif seul)"}</div>
+          <h1 className="verb-name">{active.fr}</h1>
+          <div className="verb-sub">{active.imp.ru}{active.perf ? ` (imperfectif) · ${active.perf.ru} (perfectif)` : " (imperfectif seul)"}</div>
         </div>
       </div>
 
@@ -179,7 +191,7 @@ export default function Verbs({ selected, onSelect, addXp }){
               <ConjRow key={i} pron={PRON[i]} word={form} personIndex={i} ruLabel={active.imp.ru} color={col}/>
             ))}
           </div>
-          <div className="full-note">Seul l'imperfectif a un présent — le perfectif n'en a pas.</div>
+          <div className="full-note">Seul l'imperfectif a un présent : le perfectif n'en a pas.</div>
         </div>
       )}
 
@@ -244,6 +256,8 @@ export default function Verbs({ selected, onSelect, addXp }){
           )}
         </div>
       </div>
+
+      <Pager to="verbs" items={PAGER_ITEMS} currentKey={active.id} />
     </section>
   );
 }

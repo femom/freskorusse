@@ -1,66 +1,250 @@
-// Palette de couleurs associée à chaque cas (utilisée pour les badges, tags, accents visuels).
-// Les 6 cas partagent désormais UNE seule famille de teinte (bleu-indigo, cohérente avec
-// l'accent du module "Les cas") : seule la luminosité varie d'un cas à l'autre, pour rester
-// facilement identifiable sans multiplier les couleurs différentes à l'écran.
-// "c" = couleur principale (badges, texte de tag), "bg" = fond pâle partagé pour les tags.
-const CASES_TAG_BG = "#E7EBF8";
-export const caseColors = {
-  nom:{c:"#073cff", bg:CASES_TAG_BG},
-  gen:{c:"#ce5d3b", bg:CASES_TAG_BG},
-  dat:{c:"#b89f2e", bg:CASES_TAG_BG},
-  acc:{c:"#9b2b27", bg:CASES_TAG_BG},
-  ins:{c:"#427e20", bg:CASES_TAG_BG},
-  pre:{c:"#196659", bg:CASES_TAG_BG},
-};
-// Abréviation russe classique de chaque cas (affichée dans les badges : Им., Р., Д., В., Тв., Пр.)
-export const caseAbbr = {nom:"Им.", gen:"Р.", dat:"Д.", acc:"В.", ins:"Тв.", pre:"Пр."};
+// ---------------------------------------------------------------------------
+// Contenu pédagogique des 6 cas russes.
+//
+// Ce fichier contient les textes (rôles, questions, prépositions, règles) et la
+// DESCRIPTION des tableaux. Les exemples des tableaux sont des mots (word) que
+// l'interface décline avec le moteur src/lib/declension.js : la forme affichée
+// ne peut donc pas contredire le moteur. tests/cases-data.test.js vérifie en
+// plus que chaque terminaison annoncée existe vraiment dans la forme calculée.
+// ---------------------------------------------------------------------------
 
-// Règle générale "dur / mou" qui explique QUAND utiliser quelle variante de terminaison
-// (ex: -а ou -я, -у ou -ю, -ы ou -и...). C'est la clé pour comprendre les tableaux ci-dessous :
-// chaque terminaison a une version "dure" et une version "molle", jamais les deux au hasard.
+// Couleur de chaque cas (reprise de l'affiche de référence : bleu, vert, orange,
+// rouge, violet, turquoise). Elle sert aux badges et aux accents ; le texte coloré
+// est dérivé de cette couleur par CSS pour rester lisible en clair comme en sombre.
+export const caseColors = {
+  nom: { c: "#1E6FD9" },
+  gen: { c: "#2E9E4F" },
+  dat: { c: "#E8801A" },
+  acc: { c: "#D6245A" },
+  ins: { c: "#7A4FD0" },
+  pre: { c: "#13988C" },
+};
+
+// Abréviation russe classique de chaque cas (Им., Р., Д., В., Тв., Пр.)
+export const caseAbbr = { nom: "Им.", gen: "Р.", dat: "Д.", acc: "В.", ins: "Тв.", pre: "Пр." };
+
+// Étiquettes des lignes des tableaux.
+export const genderLabels = { M: "Masculin", F: "Féminin", N: "Neutre", P: "Pluriel" };
+
+// Règle générale « dur ou mou » : elle explique QUAND utiliser quelle variante d'une
+// terminaison (-а ou -я, -у ou -ю, -ы ou -и...).
 export const hardSoftRule = {
-  title: "Comment choisir entre les 2 terminaisons (dur / mou)",
+  title: "Comment choisir entre deux terminaisons (dur ou mou)",
   points: [
-    "Un mot russe a un thème « dur » ou « mou ». C'est ce thème qui décide quelle terminaison utiliser — jamais les deux au choix.",
-    "<b>Thème dur</b> → le mot se termine par une consonne dure (брат, город) ou par -а/-о/-у/-ы. Tu prends la terminaison <b>dure</b> : -а, -у, -ы, -ом, -е...",
-    "<b>Thème mou</b> → le mot se termine par -й, -ь, ou par -я/-е/-ю/-и (учитель, дядя, время). Tu prends la terminaison <b>molle</b> : -я, -ю, -и, -ем, -е...",
-    "<b>Règle d'orthographe à connaître</b> : après г, к, х, ж, ш, щ, ч, ц on n'écrit jamais -ы → on écrit toujours -и à la place (книга → книги, pas книгы).",
-    "Autre règle utile : après ж, ш, ц, ч, щ, un -о non accentué s'écrit souvent -е (мужем mais мужчиной garde sa logique propre — retiens surtout la règle du -ы/-и, la plus fréquente)."
+    "Chaque terminaison existe en deux versions : une dure et une molle. C'est la fin du mot qui décide, jamais ton choix.",
+    "<b>Mot à thème dur</b> : il finit par une consonne (брат, город) ou par -а, -о. Tu prends la terminaison dure : -а, -у, -ы, -ом, -е.",
+    "<b>Mot à thème mou</b> : il finit par -й, -ь, -я, -е (учитель, дядя, море). Tu prends la terminaison molle : -я, -ю, -и, -ем, -е.",
+    "<b>Règle d'orthographe n° 1</b> : après г, к, х, ж, ш, щ, ч, on n'écrit jamais -ы, on écrit -и (книга → книги, et non книгы).",
+    "<b>Règle d'orthographe n° 2</b> : après ж, ш, ч, щ, ц, on écrit -ем quand la terminaison n'est pas accentuée et -ом quand elle l'est (мужем, mais ножом)."
   ]
 };
 
-// Terminaisons de chaque cas, organisées par genre (M/F/N) et par pluriel (P).
-// Pour l'accusatif, les formes des noms ANIMÉS sont explicitement notées (et pas seulement
-// "= génitif") pour que la lettre finale soit visible directement dans le tableau.
-export const endings = {
-  nom: {M:["Ø (consonne)","-й, -ь"], F:["-а (-я)","-ь (3e groupe : дверь, ночь)"], N:["-о (-е)"], P:["-ы, -и (masc./fém.)","-а, -я (neutre)"]},
-  gen: {M:["-а (-я)"], F:["-ы, -и"], N:["-а (-я)"], P:["-ов, -ев (masc.)","-ей (fém. en -ь, masc. mous)","Ø le plus souvent (книга → книг)"]},
-  dat: {M:["-у (-ю)"], F:["-е","-и (fém. en -ь)"], N:["-у (-ю)"], P:["-ам, -ям"]},
-  acc: {
-    M:["Inanimé : Ø (identique au nominatif)", "Animé : -а (-я) (identique au génitif)"],
-    F:["-у (-ю) — animé ou non, même terminaison", "Fém. en -ь : Ø (identique au nominatif)"],
-    N:["Ø (identique au nominatif — quasi toujours, même animé)"],
-    P:["Inanimé : -ы, -и / -а, -я (identique au nominatif pluriel)", "Animé : -ов, -ев, -ей, Ø (identique au génitif pluriel)"]
-  },
-  ins: {M:["-ом (-ем/-ём)"], F:["-ой (-ей/-ёй)","-ью (fém. en -ь)"], N:["-ом (-ем)"], P:["-ами, -ями"]},
-  pre: {M:["-е","-и (mots en -ий, -ие)"], F:["-е","-и (fém. en -ь)"], N:["-е","-и (mots en -ие)"], P:["-ах, -ях"]},
+// Notes correctives affichées sous le tableau d'un cas donné.
+export const fixNotes = {
+  acc: "Retiens ceci : pour un être animé (personne, animal), l'accusatif copie le génitif, au masculin singulier et à tous les pluriels. Pour un objet inanimé, il copie le nominatif. Le féminin en -а a toujours sa propre terminaison (-у).",
+  ins: "Le féminin en -ь prend -ью (дверь → дверью), pas -ю seule.",
+  pre: "Le prépositionnel s'utilise toujours avec une préposition : в, на, о (об devant une voyelle), при. Les prépositions с, к, от, для ne vont pas avec lui.",
 };
 
-// Notes correctives ponctuelles affichées sous le tableau des terminaisons d'un cas donné.
-export const fixNotes = {
-  acc: "Retiens surtout ceci : pour un être animé (personne, animal), l'accusatif emprunte toujours la forme du génitif — au singulier masculin ET au pluriel (tous genres). Pour un objet inanimé, il emprunte toujours la forme du nominatif.",
-  ins: "Le féminin en -ь prend -ью (дверь → дверью), pas -ю seule.",
+// « À retenir » (affiché sous le récapitulatif).
+export const takeaways = [
+  "Chaque cas a ses propres questions et ses propres terminaisons.",
+  "Les terminaisons changent selon le genre (masculin, féminin, neutre) et le nombre (singulier, pluriel).",
+  "Les prépositions sont souvent des indices pour savoir quel cas utiliser.",
+  "Pour un être animé, l'accusatif copie le génitif (masculin singulier et tous les pluriels).",
+  "Maîtriser les cas est essentiel pour bien construire tes phrases en russe.",
+];
+
+// ---------------------------------------------------------------------------
+// Informations de présentation de chaque cas.
+//   shortRole      : le rôle en quelques mots (tableau récapitulatif)
+//   role           : une phrase simple
+//   questionsFr    : les questions en français
+//   oftenWith      : prépositions et mots « souvent utilisés avec ce cas »
+//   rows           : tableau principal. Une ligne = un genre (ou animé / inanimé)
+//                    { g, sub?, word, number, animate?, ends, endsText, fr, prefix? }
+//                      ends     : terminaisons possibles (pour les tests) ; "" = Ø
+//                      endsText : texte affiché dans la colonne Terminaison
+//   special        : « cas particuliers » { endsText, ends, when, examples }
+//                    exemple = { word, number, animate?, stressed?, loc?, prefix?, fr }
+//                           ou { text, fr } (exemple figé, non calculé)
+// ---------------------------------------------------------------------------
+export const caseInfo = {
+  nom: {
+    shortRole: "Sujet",
+    role: "Désigne le sujet de la phrase : celui qui fait l'action ou dont on parle.",
+    questionsFr: "qui ? quoi ?",
+    oftenWith: { prepositions: [], words: [], note: "Aucune préposition ne s'utilise avec le nominatif." },
+    rows: [
+      { g: "M", word: "студент", number: "sg", endsText: "Ø (-й, -ь)", fr: "l'étudiant" },
+      { g: "F", word: "девушка", number: "sg", endsText: "-а / -я", fr: "la fille" },
+      { g: "N", word: "окно", number: "sg", endsText: "-о / -е", fr: "la fenêtre" },
+      { g: "P", word: "студент", number: "pl", endsText: "-ы / -и (neutre : -а / -я)", fr: "les étudiants" },
+    ],
+    special: [
+      { endsText: "-й, -ь", when: "Masculin à thème mou", examples: [{ text: "музей", fr: "le musée" }, { text: "учитель", fr: "le professeur" }] },
+      { endsText: "-ь", when: "Féminin de la 3e déclinaison", examples: [{ text: "дверь", fr: "la porte" }, { text: "ночь", fr: "la nuit" }] },
+      { endsText: "-ия, -ие", when: "-ия est féminin, -ие est neutre", examples: [{ text: "станция", fr: "la station" }, { text: "здание", fr: "le bâtiment" }] },
+      { endsText: "-мя", when: "Dix neutres particuliers", examples: [{ text: "имя", fr: "le prénom" }, { text: "время", fr: "le temps" }] },
+    ],
+  },
+  gen: {
+    shortRole: "Possession, absence, quantité",
+    role: "Exprime la possession, l'absence, la quantité, la partie de quelque chose.",
+    questionsFr: "de qui ? de quoi ?",
+    oftenWith: {
+      prepositions: [
+        { ru: "без", fr: "sans" }, { ru: "для", fr: "pour" }, { ru: "до", fr: "jusqu'à, avant" },
+        { ru: "из", fr: "de, hors de" }, { ru: "от", fr: "de (provenance)" }, { ru: "у", fr: "chez" },
+        { ru: "около", fr: "près de" }, { ru: "после", fr: "après" }, { ru: "кроме", fr: "sauf" },
+        { ru: "с", fr: "depuis, de" },
+      ],
+      words: [{ ru: "нет", fr: "il n'y a pas" }, { ru: "много", fr: "beaucoup" }, { ru: "мало", fr: "peu" }],
+    },
+    rows: [
+      { g: "M", word: "студент", number: "sg", ends: ["а", "я"], endsText: "-а / -я", fr: "de l'étudiant" },
+      { g: "F", word: "девушка", number: "sg", ends: ["ы", "и"], endsText: "-ы / -и", fr: "de la fille" },
+      { g: "N", word: "окно", number: "sg", ends: ["а", "я"], endsText: "-а / -я", fr: "de la fenêtre" },
+      { g: "P", word: "студент", number: "pl", ends: ["ов", "ев", "ей", ""], endsText: "-ов / -ев / -ей / Ø", fr: "des étudiants" },
+    ],
+    special: [
+      { endsText: "-я", ends: ["я"], when: "Masculin à thème mou (-ь, -й)", examples: [
+        { word: "учитель", number: "sg", animate: true, fr: "du professeur" }, { word: "музей", number: "sg", fr: "du musée" }] },
+      { endsText: "-и", ends: ["и"], when: "Féminin en -ь, -ия, -я", examples: [
+        { word: "ночь", number: "sg", fr: "de la nuit" }, { word: "Россия", number: "sg", fr: "de la Russie" }] },
+      { endsText: "-ей", ends: ["ей"], when: "Pluriel des mots en -ь et des mots en -ж, -ш, -ч, -щ", examples: [
+        { word: "учитель", number: "pl", animate: true, fr: "des professeurs" }, { word: "ночь", number: "pl", fr: "des nuits" }] },
+      { endsText: "-ев", ends: ["ев"], when: "Pluriel des mots en -й", examples: [{ word: "музей", number: "pl", fr: "des musées" }] },
+      { endsText: "-ий", ends: ["ий"], when: "Pluriel des mots en -ие, -ия", examples: [
+        { word: "здание", number: "pl", fr: "des bâtiments" }, { word: "станция", number: "pl", fr: "des stations" }] },
+      { endsText: "Ø", ends: [""], when: "Pluriel des mots en -а, -о : on retire la terminaison, parfois avec une voyelle mobile", examples: [
+        { word: "книга", number: "pl", fr: "des livres" }, { word: "окно", number: "pl", fr: "des fenêtres" }, { word: "девушка", number: "pl", animate: true, fr: "des filles" }] },
+    ],
+  },
+  dat: {
+    shortRole: "Destinataire",
+    role: "Indique la personne à qui l'on donne, dit ou destine quelque chose.",
+    questionsFr: "à qui ? à quoi ?",
+    oftenWith: {
+      prepositions: [{ ru: "к", fr: "vers, chez" }, { ru: "по", fr: "le long de, selon" }],
+      words: [
+        { ru: "давать", fr: "donner" }, { ru: "помогать", fr: "aider" }, { ru: "звонить", fr: "téléphoner" },
+        { ru: "писать", fr: "écrire" }, { ru: "говорить", fr: "dire" }, { ru: "нравиться", fr: "plaire" },
+      ],
+    },
+    rows: [
+      { g: "M", word: "студент", number: "sg", ends: ["у", "ю"], endsText: "-у / -ю", fr: "à l'étudiant" },
+      { g: "F", word: "девушка", number: "sg", ends: ["е", "и"], endsText: "-е (-и après -ь, -ия)", fr: "à la fille" },
+      { g: "N", word: "окно", number: "sg", ends: ["у", "ю"], endsText: "-у / -ю", fr: "à la fenêtre" },
+      { g: "P", word: "студент", number: "pl", ends: ["ам", "ям"], endsText: "-ам / -ям", fr: "aux étudiants" },
+    ],
+    special: [
+      { endsText: "-и", ends: ["и"], when: "Féminin en -ь et en -ия", examples: [
+        { word: "ночь", number: "sg", fr: "à la nuit" }, { word: "Россия", number: "sg", fr: "à la Russie" }] },
+      { endsText: "-ю", ends: ["ю"], when: "Masculin et neutre à thème mou", examples: [
+        { word: "учитель", number: "sg", animate: true, fr: "au professeur" }, { word: "море", number: "sg", fr: "à la mer" }] },
+      { endsText: "-ию", ends: ["ию"], when: "Neutre en -ие", examples: [{ word: "здание", number: "sg", fr: "au bâtiment" }] },
+    ],
+  },
+  acc: {
+    shortRole: "Objet direct",
+    role: "Indique l'objet direct : ce que l'on voit, ce que l'on prend, ce que l'on aime.",
+    questionsFr: "qui ? quoi ?",
+    oftenWith: {
+      prepositions: [
+        { ru: "в", fr: "dans, vers (mouvement)" }, { ru: "на", fr: "sur, vers (mouvement)" },
+        { ru: "за", fr: "pour, derrière (mouvement)" }, { ru: "через", fr: "à travers, dans (délai)" },
+        { ru: "про", fr: "à propos de" },
+      ],
+      words: [{ ru: "видеть", fr: "voir" }, { ru: "любить", fr: "aimer" }, { ru: "читать", fr: "lire" }, { ru: "знать", fr: "connaître" }],
+    },
+    rows: [
+      { g: "M", sub: "inanimé", word: "стол", number: "sg", ends: [""], endsText: "Ø (comme le nominatif)", fr: "la table" },
+      { g: "M", sub: "animé", word: "студент", number: "sg", animate: true, ends: ["а", "я"], endsText: "-а / -я (comme le génitif)", fr: "l'étudiant" },
+      { g: "F", word: "девушка", number: "sg", animate: true, ends: ["у", "ю"], endsText: "-у / -ю", fr: "la fille" },
+      { g: "N", word: "окно", number: "sg", ends: [""], endsText: "Ø (comme le nominatif)", fr: "la fenêtre" },
+      { g: "P", sub: "inanimé", word: "стол", number: "pl", ends: ["ы", "и"], endsText: "-ы / -и (comme le nominatif)", fr: "les tables" },
+      { g: "P", sub: "animé", word: "студент", number: "pl", animate: true, ends: ["ов", "ев", "ей", ""], endsText: "-ов / -ев / -ей / Ø (comme le génitif)", fr: "les étudiants" },
+    ],
+    special: [
+      { endsText: "-ю", ends: ["ю"], when: "Féminin en -я et en -ия", examples: [
+        { word: "неделя", number: "sg", fr: "la semaine" }, { word: "Россия", number: "sg", fr: "la Russie" }] },
+      { endsText: "Ø", ends: [""], when: "Féminin en -ь : identique au nominatif", examples: [
+        { word: "дверь", number: "sg", fr: "la porte" }, { word: "ночь", number: "sg", fr: "la nuit" }] },
+      { endsText: "-ов / -ей / Ø", ends: ["ов", "ей", ""], when: "Pluriel animé : identique au génitif pluriel", examples: [
+        { word: "девушка", number: "pl", animate: true, fr: "les filles" }, { word: "учитель", number: "pl", animate: true, fr: "les professeurs" }] },
+    ],
+  },
+  ins: {
+    shortRole: "Instrument, manière, compagnie",
+    role: "Indique l'instrument, le moyen, la manière, la compagnie.",
+    questionsFr: "par qui ? avec qui ? avec quoi ?",
+    oftenWith: {
+      prepositions: [
+        { ru: "с", fr: "avec" }, { ru: "над", fr: "au-dessus de" }, { ru: "под", fr: "sous" },
+        { ru: "перед", fr: "devant" }, { ru: "между", fr: "entre" }, { ru: "за", fr: "derrière" },
+      ],
+      words: [
+        { ru: "работать", fr: "travailler (comme)" }, { ru: "стать", fr: "devenir" },
+        { ru: "интересоваться", fr: "s'intéresser à" }, { ru: "гордиться", fr: "être fier de" },
+      ],
+    },
+    rows: [
+      { g: "M", word: "студент", number: "sg", prefix: "со ", ends: ["ом", "ем"], endsText: "-ом / -ем (-ём)", fr: "avec l'étudiant" },
+      { g: "F", word: "девушка", number: "sg", prefix: "с ", ends: ["ой", "ей"], endsText: "-ой / -ей (-ёй)", fr: "avec la fille" },
+      { g: "N", word: "окно", number: "sg", prefix: "перед ", ends: ["ом", "ем"], endsText: "-ом / -ем", fr: "devant la fenêtre" },
+      { g: "P", word: "студент", number: "pl", prefix: "со ", ends: ["ами", "ями"], endsText: "-ами / -ями", fr: "avec les étudiants" },
+    ],
+    special: [
+      { endsText: "-ью", ends: ["ью"], when: "Féminin en -ь", examples: [
+        { word: "ночь", number: "sg", fr: "la nuit (adverbe)" }, { word: "дверь", number: "sg", prefix: "за ", fr: "derrière la porte" }] },
+      { endsText: "-ией", ends: ["ией"], when: "Féminin en -ия", examples: [
+        { word: "Россия", number: "sg", prefix: "с ", fr: "avec la Russie" }, { word: "станция", number: "sg", prefix: "перед ", fr: "devant la station" }] },
+      { endsText: "-ём / -ёй", ends: ["ём", "ёй"], when: "Terminaison accentuée d'un mot mou", examples: [
+        { word: "словарь", number: "sg", fr: "avec le dictionnaire" }, { word: "земля", number: "sg", stressed: true, fr: "avec la terre" }] },
+      { endsText: "-ьми", ends: ["ьми"], when: "Quelques pluriels irréguliers", examples: [{ text: "детьми", fr: "avec les enfants" }, { text: "людьми", fr: "avec les gens" }] },
+    ],
+  },
+  pre: {
+    shortRole: "Lieu, temps, sujet de la conversation",
+    role: "Indique le lieu, le temps, la position, et ce dont on parle.",
+    questionsFr: "de qui ? de quoi ? où ?",
+    oftenWith: {
+      prepositions: [
+        { ru: "в", fr: "dans" }, { ru: "на", fr: "sur, à" }, { ru: "о / об", fr: "au sujet de" }, { ru: "при", fr: "auprès de" },
+      ],
+      words: [],
+    },
+    rows: [
+      { g: "M", word: "город", number: "sg", prefix: "в ", ends: ["е"], endsText: "-е", fr: "dans la ville" },
+      { g: "F", word: "страна", number: "sg", prefix: "в ", ends: ["е"], endsText: "-е (-и après -ь, -ии après -ия)", fr: "dans le pays" },
+      { g: "N", word: "море", number: "sg", prefix: "в ", ends: ["е"], endsText: "-е (-ии après -ие)", fr: "dans la mer" },
+      { g: "P", word: "город", number: "pl", prefix: "в ", ends: ["ах", "ях"], endsText: "-ах / -ях", fr: "dans les villes" },
+    ],
+    special: [
+      { endsText: "-ии", ends: ["ии"], when: "Mots en -ий, -ие, -ия", examples: [
+        { word: "санаторий", number: "sg", prefix: "в ", fr: "dans le sanatorium" },
+        { word: "здание", number: "sg", prefix: "в ", fr: "dans le bâtiment" },
+        { word: "Россия", number: "sg", prefix: "в ", fr: "en Russie" }] },
+      { endsText: "-и", ends: ["и"], when: "Féminin en -ь", examples: [
+        { word: "тетрадь", number: "sg", prefix: "в ", fr: "dans le cahier" }, { word: "ночь", number: "sg", prefix: "о ", fr: "de la nuit" }] },
+      { endsText: "-у / -ю", ends: ["у", "ю"], when: "Quelques masculins prennent -у après в ou на (locatif) : à connaître par cœur", examples: [
+        { word: "лес", number: "sg", loc: true, prefix: "в ", fr: "dans la forêt" },
+        { word: "мост", number: "sg", loc: true, prefix: "на ", fr: "sur le pont" },
+        { word: "сад", number: "sg", loc: true, prefix: "в ", fr: "dans le jardin" }] },
+    ],
+  },
 };
 
 // ---------------------------------------------------------------------------
-// Contenu pédagogique des 6 cas russes : usage, terminaisons, exemples et
-// exercices de la leçon interactive. Consommé par src/pages/Cases.jsx.
+// Détail des 6 cas : usage, phrases d'exemple et exercices de la leçon interactive.
+// Consommé par src/pages/Cases.jsx.
 // ---------------------------------------------------------------------------
 export const cases = [
   {
     key:"nom", label:"Nominatif", ru:"именительный", questions:"кто? что?",
     usage:[
-      "C'est la forme de base d'un nom — celle que tu trouves dans le dictionnaire.",
+      "C'est la forme de base d'un nom, celle que tu trouves dans le dictionnaire.",
       "Il répond toujours à la fonction de <b>sujet</b> de la phrase : celui qui fait ou qui est.",
       "Aucune préposition ne s'utilise avec le nominatif."
     ],
@@ -71,16 +255,16 @@ export const cases = [
       ["P","Друзья приходят вечером.","droo-ZYA pri-HO-dyat VYE-chi-ram","Les amis arrivent le soir.","Друзья"],
     ],
     exos:[
-      {type:"type", prompt:"___ работает дома.", base:"брат — le frère · Nominatif, sujet", answer:["брат"]},
+      {type:"type", prompt:"___ работает дома.", base:"брат (le frère) · Nominatif, sujet", answer:["брат"]},
       {type:"mcq", prompt:"Кто читает книгу?", base:"Nominatif, sujet", options:["студент","студента","студенту"], answer:["студент"]},
-      {type:"type", prompt:"___ учится в школе.", base:"сестра — la sœur · Nominatif, sujet", answer:["сестра"]},
+      {type:"type", prompt:"___ учится в школе.", base:"сестра (la sœur) · Nominatif, sujet", answer:["сестра"]},
       {type:"mcq", prompt:"Что лежит на столе?", base:"Nominatif, sujet", options:["книга","книгу","книги"], answer:["книга"]},
-      {type:"type", prompt:"___ открыто.", base:"окно — la fenêtre · Nominatif, sujet", answer:["окно"]},
+      {type:"type", prompt:"___ открыто.", base:"окно (la fenêtre) · Nominatif, sujet", answer:["окно"]},
       {type:"mcq", prompt:"Что там?", base:"Nominatif, sujet", options:["письмо","письма","письму"], answer:["письмо"]},
-      {type:"type", prompt:"___ приходят вечером.", base:"друзья — les amis · Nominatif pluriel", answer:["друзья"]},
+      {type:"type", prompt:"___ приходят вечером.", base:"друзья (les amis) · Nominatif pluriel", answer:["друзья"]},
       {type:"mcq", prompt:"Кто здесь?", base:"Nominatif pluriel", options:["студенты","студентов","студентам"], answer:["студенты"]},
-      {type:"type", prompt:"___ большой.", base:"город — la ville · Nominatif, sujet", answer:["город"]},
-      {type:"type", prompt:"___ едет быстро.", base:"машина — la voiture · Nominatif, sujet", answer:["машина"]},
+      {type:"type", prompt:"___ большой.", base:"город (la ville) · Nominatif, sujet", answer:["город"]},
+      {type:"type", prompt:"___ едет быстро.", base:"машина (la voiture) · Nominatif, sujet", answer:["машина"]},
     ]
   },
   {
