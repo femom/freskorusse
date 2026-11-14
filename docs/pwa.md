@@ -4,7 +4,7 @@ Code : `src/lib/pwa.js`, `src/lib/sound.js`, `vite.config.js`, `scripts/verify-o
 
 ## Hors-ligne
 Le service worker (généré par vite-plugin-pwa) met en cache TOUS les fichiers de l'app à la première visite
-en ligne : page, JavaScript, CSS, icônes, manifest. Ensuite, l'app s'ouvre sans réseau. Le routage se fait avec
+en ligne : page, JavaScript, CSS, icônes, manifest et police Onest (.woff2). Ensuite, l'app s'ouvre sans réseau. Le routage se fait avec
 `#`, donc toute adresse retombe sur `index.html`. Les voix de la dictée viennent de l'appareil (pas du réseau).
 
 Règle : aucune ressource externe (polices Google, images distantes, API). Une seule suffirait à casser

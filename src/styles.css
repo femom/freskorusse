@@ -20,12 +20,31 @@
    1. THEME
    ----------------------------------------------------------------------------- */
 :root {
-   --bg: #14161C;
-   --card: #1C1F27;
-   --ink: #EDEEF2;
-   --ink-soft: #A2A6B0;
-   --ink-faint: #8D92A1;
-   --line: #2A2D37;
+   /* NUIT PRUNE (thème sombre). Contrastes volontairement adoucis pour le confort :
+      texte principal ~11:1, secondaire ~6,4:1, pâle ~4,6:1 (AA partout). */
+   --bg: #211B2E;
+   --card: #2E2740;
+   --nav: #282135;
+   --ink: #E6DFEC;
+   --ink-soft: #B4A9C7;
+   --ink-faint: #9A8EB0;
+   --line: #403657;
+   /* VERRE : liseré translucide, reflet en haut, ombre douce (plus de contour noir épais). */
+   --glass-line: rgba(255, 255, 255, 0.14);
+   --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+   --glass-shadow: 0 10px 28px rgba(8, 4, 16, 0.38);
+   --glass-fill: color-mix(in srgb, var(--card) 72%, transparent);
+   --field-border: #9488B0;
+   --mix: 50%;
+   --lime: #D3E563;
+   --lilac: #B4A5EC;
+   --butter: #F0DA9C;
+   --pink: #F2C0D6;
+   --mint: #B0DCC3;
+   --on-pastel: #211B2E;
+   --btn: #E6DFEC;
+   --on-btn: #211B2E;
+   --font: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
    --accent-cases: #6D82DE;
    --accent-cases-soft: rgba(109, 130, 222, 0.16);
@@ -57,30 +76,47 @@
    --radius-lg: 20px;
    --radius-md: 14px;
    --radius-sm: 10px;
-   --shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 18px rgba(0, 0, 0, 0.28);
+   --shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 22px rgba(10, 6, 18, 0.35);
 }
 
 :root {
    /* Variantes « texte » des accents : rapprochées de l'encre du thème courant.
       color-mix + var(--ink) se résolvent par thème au moment de l'usage, donc ces
       lignes valent pour le sombre ET le clair (ratio ≥ 4,5:1 vérifié). */
-   --ok-text: color-mix(in srgb, var(--ok) 70%, var(--ink));
-   --bad-text: color-mix(in srgb, var(--bad) 70%, var(--ink));
-   --accent-cases-text: color-mix(in srgb, var(--accent-cases) 70%, var(--ink));
-   --accent-verbs-text: color-mix(in srgb, var(--accent-verbs) 70%, var(--ink));
-   --accent-dictation-text: color-mix(in srgb, var(--accent-dictation) 70%, var(--ink));
-   --accent-translation-text: color-mix(in srgb, var(--accent-translation) 70%, var(--ink));
-   --accent-bank-text: color-mix(in srgb, var(--accent-bank) 70%, var(--ink));
-   --accent-phrases-text: color-mix(in srgb, var(--accent-phrases) 70%, var(--ink));
+   --ok-text: color-mix(in srgb, var(--ok) var(--mix, 50%), var(--ink));
+   --bad-text: color-mix(in srgb, var(--bad) var(--mix, 50%), var(--ink));
+   --accent-cases-text: color-mix(in srgb, var(--accent-cases) var(--mix, 50%), var(--ink));
+   --accent-verbs-text: color-mix(in srgb, var(--accent-verbs) var(--mix, 50%), var(--ink));
+   --accent-dictation-text: color-mix(in srgb, var(--accent-dictation) var(--mix, 50%), var(--ink));
+   --accent-translation-text: color-mix(in srgb, var(--accent-translation) var(--mix, 50%), var(--ink));
+   --accent-bank-text: color-mix(in srgb, var(--accent-bank) var(--mix, 50%), var(--ink));
+   --accent-phrases-text: color-mix(in srgb, var(--accent-phrases) var(--mix, 50%), var(--ink));
 }
 
 :root[data-theme="light"] {
-   --bg: #F5F4F1;
-   --card: #FFFFFF;
-   --ink: #211F1C;
-   --ink-soft: #6B6A66;
-   --ink-faint: #6F6D68;
-   --line: #E6E4DE;
+   /* LAVANDE (thème clair). Blanc cassé au lieu du blanc pur, encre indigo adoucie :
+      texte principal ~11:1, secondaire ~5,6:1, pâle ~4,7:1 (AA partout). */
+   --bg: #ECE8F7;
+   --card: #FAF8FF;
+   --nav: #FAF8FF;
+   --ink: #2E2A47;
+   --ink-soft: #5C5878;
+   --ink-faint: #68647F;
+   --line: #D3CCE6;
+   --glass-line: rgba(91, 86, 121, 0.16);
+   --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+   --glass-shadow: 0 10px 28px rgba(46, 42, 71, 0.13);
+   --glass-fill: color-mix(in srgb, var(--card) 70%, transparent);
+   --field-border: #7F799C;
+   --mix: 50%;
+   --lime: #D8EA55;
+   --lilac: #C2B6F2;
+   --butter: #F6E0A4;
+   --pink: #F5C6DB;
+   --mint: #B8E3CB;
+   --on-pastel: #2E2A47;
+   --btn: #2E2A47;
+   --on-btn: #FAF8FF;
 
    --accent-cases: #4B64CC;
    --accent-cases-soft: #E7EBF8;
@@ -108,7 +144,7 @@
    --bad-solid: #B83E3B;
    --on-solid: #FFFFFF;
 
-   --shadow: 0 1px 2px rgba(30, 28, 24, 0.04), 0 6px 16px rgba(30, 28, 24, 0.06);
+   --shadow: 0 1px 2px rgba(46, 42, 71, 0.06), 0 8px 20px rgba(46, 42, 71, 0.10);
 }
 
 /* -----------------------------------------------------------------------------
@@ -172,7 +208,7 @@ html {
 body {
    background: var(--bg);
    color: var(--ink);
-   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+   font-family: var(--font);
    line-height: 1.55;
    -webkit-font-smoothing: antialiased;
    transition: background-color .2s ease, color .2s ease;
@@ -2007,7 +2043,7 @@ dialog.game-overlay:not([open]) {
    ----------------------------------------------------------------------------- */
 /* Couleur de texte dérivée de la couleur du cas : lisible en sombre comme en clair. */
 .case-scope {
-   --case-text: color-mix(in srgb, var(--case-c) 65%, var(--ink));
+   --case-text: color-mix(in srgb, var(--case-c) var(--mix, 50%), var(--ink));
 }
 
 /* Confirmation avant de quitter une série. */
@@ -2078,12 +2114,6 @@ dialog.game-overlay:not([open]) {
 .phrase-item.is-highlighted {
    border-color: var(--accent-phrases);
    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-phrases) 30%, transparent);
-}
-.phrase-prononciation {
-   font-size: 0.82rem;
-   color: var(--ink-faint);
-   font-style: italic;
-   margin-top: 4px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -2829,4 +2859,350 @@ dialog.install-dialog::backdrop {
 }
 .case-link:hover {
    text-decoration: underline;
+}
+
+
+/* -----------------------------------------------------------------------------
+   SKIN v4 : VERRE (liseré fin translucide, reflet en haut, ombre douce, flou).
+   Remplace les contours noirs épais. Les formes, les pastels et les cubes de lettres restent.
+   ----------------------------------------------------------------------------- */
+.card,
+.game-card,
+.game-confirm-card,
+.spotlight-card,
+.conj-col,
+.pager-link,
+.word-message,
+.word-note,
+.case-card,
+.table-wrap,
+.cases-tabs,
+.toast,
+dialog.search-dialog,
+dialog.install-dialog {
+   border: 1px solid var(--glass-line);
+   box-shadow: var(--glass-hi), var(--glass-shadow);
+}
+.case-card {
+   background: color-mix(in srgb, var(--case-c) 7%, var(--card));
+}
+
+/* Surfaces « verre » : translucides, avec flou de ce qui passe derrière (taches de couleur, défilement). */
+.glass,
+dialog.search-dialog,
+dialog.install-dialog,
+.toast {
+   background: var(--glass-fill);
+   -webkit-backdrop-filter: blur(18px) saturate(1.4);
+   backdrop-filter: blur(18px) saturate(1.4);
+}
+dialog.search-dialog,
+dialog.install-dialog {
+   background: color-mix(in srgb, var(--card) 90%, transparent);
+}
+.mobile-topbar,
+.tabbar {
+   background: var(--glass-fill);
+   -webkit-backdrop-filter: blur(18px) saturate(1.4);
+   backdrop-filter: blur(18px) saturate(1.4);
+   border-color: var(--glass-line);
+}
+nav.side {
+   background: var(--nav);
+   border-right-color: var(--glass-line);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+   .glass,
+   .mobile-topbar,
+   .tabbar,
+   .toast {
+      background: var(--card);
+   }
+}
+
+/* Champs et boutons secondaires : bordure fine mais assez marquée pour rester repérable (3:1 minimum). */
+.filter-field,
+.answer-input,
+.btn-primary.ghost,
+.exit-btn,
+.speak-btn,
+.letter-tab,
+.theme-toggle,
+.icon-toggle,
+.install-btn,
+.search-trigger,
+.sidebar-toggle {
+   border-color: var(--field-border);
+}
+.filter-field:focus-within,
+.answer-input:focus {
+   border-color: var(--accent-cases);
+}
+
+/* -----------------------------------------------------------------------------
+   ACCUEIL v4 : salutation, stats, reprise, recommandations, série, défi
+   ----------------------------------------------------------------------------- */
+.home .title {
+   font-size: 2.6rem;
+   font-weight: 800;
+   letter-spacing: -0.5px;
+}
+.home-grid {
+   display: grid;
+   grid-template-columns: minmax(0, 1fr) 320px;
+   gap: 24px;
+   align-items: start;
+   margin-bottom: 8px;
+}
+.home-main,
+.home-side {
+   display: flex;
+   flex-direction: column;
+   gap: 22px;
+   min-width: 0;
+}
+.home-side h2,
+.home-hero h3,
+.pick h3 {
+   margin: 0;
+   font-weight: 800;
+}
+.home-side h2 {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   font-size: 1.2rem;
+}
+
+.stat-row {
+   display: grid;
+   grid-template-columns: repeat(4, minmax(0, 1fr));
+   gap: 12px;
+}
+.stat-chip {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   padding: 12px 14px;
+   border-radius: 18px;
+   color: var(--on-pastel);
+   border: 1px solid rgba(255, 255, 255, 0.45);
+   box-shadow: var(--glass-hi), 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+.stat-chip.butter { background: var(--butter); }
+.stat-chip.lilac { background: var(--lilac); }
+.stat-chip.mint { background: var(--mint); }
+.stat-chip.pink { background: var(--pink); }
+.stat-chip b {
+   display: block;
+   font-size: 1.5rem;
+   line-height: 1;
+   font-weight: 800;
+}
+.stat-chip span:not(.stat-icon) {
+   font-size: 0.78rem;
+   font-weight: 600;
+}
+.stat-icon {
+   display: grid;
+   place-items: center;
+   width: 28px;
+   font-size: 1.6rem;
+   font-weight: 800;
+   flex-shrink: 0;
+}
+
+.home-hero {
+   display: flex;
+   align-items: center;
+   gap: 24px;
+   padding: 22px 24px;
+   border-radius: 24px;
+   flex-wrap: wrap;
+}
+.hero-text {
+   flex: 1;
+   min-width: 220px;
+}
+.hero-text h3 {
+   margin: 10px 0 4px 0;
+   font-size: 1.7rem;
+   line-height: 1.15;
+}
+.hero-text p {
+   margin: 0 0 16px 0;
+   color: var(--ink-soft);
+   font-size: 0.92rem;
+}
+
+/* Cubes de l'alphabet : tache citron + trois cubes pastel légèrement penchés. */
+.letter-art {
+   position: relative;
+   width: 150px;
+   height: 130px;
+   flex-shrink: 0;
+   border-radius: 55% 45% 50% 50%;
+   background: var(--lime);
+   box-shadow: var(--glass-hi), 0 10px 22px rgba(0, 0, 0, 0.14);
+}
+.lb {
+   position: absolute;
+   display: grid;
+   place-items: center;
+   width: 54px;
+   height: 54px;
+   border-radius: 14px;
+   border: 1px solid rgba(255, 255, 255, 0.55);
+   box-shadow: var(--glass-hi), 0 6px 14px rgba(0, 0, 0, 0.16);
+   font-size: 1.7rem;
+   font-weight: 800;
+   color: var(--on-pastel);
+}
+.lb.a { left: 14px; top: 18px; background: var(--lilac); transform: rotate(-9deg); }
+.lb.b { left: 54px; top: 62px; background: var(--butter); transform: rotate(6deg); }
+.lb.v { left: 92px; top: 22px; background: var(--pink); transform: rotate(-3deg); }
+
+.btn-home {
+   display: inline-flex;
+   align-items: center;
+   gap: 8px;
+   min-height: 48px;
+   padding: 12px 24px;
+   border-radius: 999px;
+   border: 1px solid var(--glass-line);
+   background: var(--btn);
+   color: var(--on-btn);
+   font-weight: 700;
+   font-size: 1rem;
+   text-decoration: none;
+   box-shadow: var(--glass-hi), 0 8px 18px rgba(0, 0, 0, 0.2);
+   transition: transform .15s ease;
+}
+.btn-home:hover { transform: translateY(-1px); }
+.btn-home.on-pastel {
+   background: var(--on-pastel);
+   color: var(--lilac);
+}
+
+.pick-grid {
+   display: grid;
+   grid-template-columns: repeat(2, minmax(0, 1fr));
+   gap: 16px;
+}
+.pick {
+   position: relative;
+   overflow: hidden;
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   min-height: 132px;
+   padding: 18px;
+   border-radius: 24px;
+   color: inherit;
+   text-decoration: none;
+   transition: transform .15s ease;
+}
+.pick:hover { transform: translateY(-2px); }
+.pick::after {
+   content: "";
+   position: absolute;
+   right: -34px;
+   top: -34px;
+   width: 130px;
+   height: 130px;
+   border-radius: 50%;
+   background: var(--lime);
+   opacity: 0.9;
+}
+.pick > * { position: relative; z-index: 1; }
+.pick h3 { font-size: 1.1rem; margin-top: 6px; max-width: 68%; }
+.pick p { margin: 0; color: var(--ink-soft); font-size: 0.86rem; }
+.pick-letter {
+   position: absolute !important;
+   right: 16px;
+   top: 14px;
+   z-index: 2 !important;
+   display: grid;
+   place-items: center;
+   width: 52px;
+   height: 52px;
+   border-radius: 14px;
+   border: 1px solid rgba(255, 255, 255, 0.55);
+   box-shadow: var(--glass-hi), 0 6px 14px rgba(0, 0, 0, 0.16);
+   transform: rotate(8deg);
+   font-size: 1.6rem;
+   font-weight: 800;
+   color: var(--on-pastel);
+}
+.pick.pink .pick-letter { background: var(--pink); }
+.pick.mint .pick-letter { background: var(--mint); }
+.pick.butter .pick-letter { background: var(--butter); }
+.pick.lilac .pick-letter { background: var(--lilac); }
+.pick-tag {
+   align-self: flex-start;
+   display: inline-block;
+   padding: 4px 10px;
+   border-radius: 8px;
+   border: 1px solid var(--glass-line);
+   background: var(--glass-fill);
+   font-size: 0.74rem;
+   font-weight: 700;
+}
+
+.streak-card,
+.challenge-card {
+   padding: 20px;
+   border-radius: 24px;
+}
+.streak-card p,
+.challenge-card p {
+   margin: 0;
+   font-size: 0.9rem;
+}
+.streak-card p { color: var(--ink-soft); }
+.week {
+   list-style: none;
+   display: flex;
+   gap: 6px;
+   margin: 16px 0 12px 0;
+   padding: 0;
+}
+.week li {
+   flex: 1;
+   max-width: 40px;
+   aspect-ratio: 1;
+   display: grid;
+   place-items: center;
+   border-radius: 50%;
+   border: 1px solid var(--field-border);
+   font-size: 0.8rem;
+   font-weight: 700;
+   color: var(--ink-soft);
+}
+.week li.done {
+   background: var(--lime);
+   border-color: transparent;
+   color: var(--on-pastel);
+}
+.week li.today {
+   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-cases) 45%, transparent);
+}
+.challenge-card {
+   background: var(--lilac);
+   color: var(--on-pastel);
+   border-color: rgba(255, 255, 255, 0.45);
+}
+.challenge-card p { margin: 8px 0 16px 0; font-weight: 600; }
+.challenge-card h2 { color: var(--on-pastel); }
+
+@media (max-width: 1100px) {
+   .home-grid { grid-template-columns: minmax(0, 1fr); }
+   .home-side { flex-direction: row; flex-wrap: wrap; }
+   .home-side > * { flex: 1 1 280px; }
+}
+@media (max-width: 700px) {
+   .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+   .pick-grid { grid-template-columns: minmax(0, 1fr); }
+   .home .title { font-size: 2.1rem; }
+   .letter-art { margin: 0 auto; }
 }

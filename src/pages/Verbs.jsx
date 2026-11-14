@@ -160,7 +160,7 @@ export default function Verbs({ selected, addXp }){
 
   // --- Détail d'un verbe précis ------------------------------------------------
   // Couleur de TEXTE lisible dans les deux thèmes (la couleur pure reste réservée aux badges).
-  const col = legible(groupColor[active.imp.group], 60);
+  const col = legible(groupColor[active.imp.group]);
   // Le futur composé de l'imperfectif (буду/будешь...) n'est jamais "coupé" :
   // on colore l'auxiliaire en entier (c'est lui qui porte toute la conjugaison),
   // l'infinitif est affiché une seule fois, au centre, comme dans le document source.

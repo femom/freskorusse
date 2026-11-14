@@ -25,7 +25,8 @@ const sw = fs.readFileSync(path.join(DIST, "sw.js"), "utf8");
 const precached = new Set([...sw.matchAll(/\{url:"([^"]+)"/g)].map((m) => m[1]));
 
 // 1. Tous les fichiers de l'app sont précachés (sauf le service worker lui-même et ses dépendances).
-const files = walk(DIST).map(rel).filter((f) => f !== "sw.js" && !/^workbox-.*\.js$/.test(f) && !f.endsWith(".map"));
+// Les .woff (ancien format) ne sont que des solutions de repli : les navigateurs récents lisent le .woff2, seul précaché.
+const files = walk(DIST).map(rel).filter((f) => f !== "sw.js" && !/^workbox-.*\.js$/.test(f) && !f.endsWith(".map") && !f.endsWith(".woff"));
 const missing = files.filter((f) => !precached.has(f));
 check(missing.length === 0, `Les ${files.length} fichiers de l'app sont dans le cache hors-ligne`, missing.join(", "));
 
@@ -34,6 +35,10 @@ const html = fs.readFileSync(path.join(DIST, "index.html"), "utf8");
 const refs = [...html.matchAll(/(?:src|href)="\.\/([^"#?]+)"/g)].map((m) => m[1]);
 const refMissing = refs.filter((r) => !precached.has(r));
 check(refs.length > 0 && refMissing.length === 0, `index.html : ${refs.length} ressources, toutes en cache`, refMissing.join(", "));
+
+// 2b. La police est embarquée ET en cache : sinon le design change hors-ligne.
+const fonts = [...precached].filter((u) => u.endsWith(".woff2"));
+check(fonts.length >= 6, `Police embarquée et en cache hors-ligne (${fonts.length} fichiers .woff2)`);
 
 // 3. Navigation hors-ligne : toute adresse retombe sur index.html (l'app route avec #, donc suffisant).
 check(/NavigationRoute/.test(sw) && /createHandlerBoundToURL\("index\.html"\)/.test(sw), "Navigation hors-ligne : retombe sur index.html");

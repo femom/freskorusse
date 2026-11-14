@@ -3,6 +3,7 @@ import { Trophy, HeartCrack } from "lucide-react";
 import { normalize, shuffle } from "../lib/text.js";
 import GameShell, { Hearts, Feedback, EndScreen } from "./GameShell.jsx";
 import { play } from "../lib/sound.js";
+import { recordActivity, recordLesson } from "../lib/stats.js";
 import SpeakButton from "./SpeakButton.jsx";
 
 // Moteur de leçon générique réutilisé par les cas, les verbes ET la banque de
@@ -33,12 +34,13 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
     const ok = q.answer.map(normalize).includes(normalize(given));
     setAnswered(true); setCorrect(ok); setSelected(given);
     play(ok ? "correct" : "wrong");
+    recordActivity();
     if(ok) setXpGain(x=>x+10); else setHearts(h=>h-1);
   }
 
   function advance(){
     if(hearts <= 0){ setFinished("lose"); play("lose"); return; }
-    if(pos+1 >= order.length){ setFinished("win"); play("win"); onFinish(xpGain); return; }
+    if(pos+1 >= order.length){ setFinished("win"); play("win"); recordLesson(); onFinish(xpGain); return; }
     setPos(p=>p+1);
   }
 

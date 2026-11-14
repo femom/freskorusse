@@ -29,8 +29,8 @@ export default defineConfig({
         description: "Cas, conjugaison, dictée et traduction russes, même sans connexion.",
         lang: "fr",
         orientation: "portrait",
-        theme_color: "#10151F",
-        background_color: "#10151F",
+        theme_color: "#211B2E",
+        background_color: "#211B2E",
         display: "standalone",
         start_url: "./",
         scope: "./",
@@ -41,7 +41,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+        // woff2 : la police doit être en cache, sinon le design change hors-ligne.
+        globPatterns: ["**/*.{js,css,html,png,svg,ico,woff2}"],
         // Supprime les anciens fichiers du cache à chaque nouvelle version (sinon il grossit sans fin).
         cleanupOutdatedCaches: true,
         // Toute navigation hors-ligne retombe sur index.html : l'app (routage par #) s'affiche toujours.

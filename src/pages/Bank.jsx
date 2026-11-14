@@ -4,6 +4,7 @@ import { wordBank } from "../data/wordbank.js";
 import LessonEngine from "../components/LessonEngine.jsx";
 import { shuffle } from "../lib/text.js";
 import { play } from "../lib/sound.js";
+import { recordWordSeen } from "../lib/stats.js";
 import FilterInput from "../components/FilterInput.jsx";
 import { useRoute } from "../lib/router.jsx";
 
@@ -24,7 +25,7 @@ function FlipCard({ word, flipped, onToggle, className = "", faceClass = "" }){
   const controlled = flipped !== undefined;
   const isFlipped = controlled ? flipped : local;
   const flip = controlled ? onToggle : ()=> setLocal(f=>!f);
-  const toggle = ()=> { play("flip"); flip(); };
+  const toggle = ()=> { play("flip"); recordWordSeen(word.id); flip(); };
   return (
     <div
       className={"flip-card " + className + (isFlipped ? " flipped" : "")}

@@ -15,7 +15,7 @@ const h1 = () => screen.getByRole("heading", { level: 1 });
 describe("navigation : de l'accueil aux détails", () => {
   it("l'accueil affiche des cartes qui sont de vrais liens", () => {
     render(<App />);
-    expect(h1().textContent).toBe("FreskoRusse");
+    expect(h1().textContent).toBe("Привет !");
     const link = screen.getAllByRole("link").find((a) => a.getAttribute("href") === "#/cas" && a.className.includes("module-card"));
     expect(link).toBeTruthy();
   });
@@ -65,7 +65,7 @@ describe("navigation : de l'accueil aux détails", () => {
     unmount();
     await go("#/");
     render(<App />);
-    expect(screen.getByText("Reprendre")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Reprendre" })).toBeTruthy();
   });
 });
 

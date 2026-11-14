@@ -35,7 +35,7 @@ export function useTheme() {
     document.documentElement.setAttribute("data-theme", theme);
     writeStorage(THEME_KEY, theme);
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#10151F" : "#F5F4F1");
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#211B2E" : "#ECE8F7");
   }, [theme]);
   const toggle = useCallback(() => setTheme((t) => (t === "dark" ? "light" : "dark")), []);
   return [theme, toggle];

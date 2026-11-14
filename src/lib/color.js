@@ -52,6 +52,7 @@ export function badgeColors(bgHex, min = 4.5) {
 // Version « texte » d'une couleur d'accent : on la rapproche de l'encre du
 // thème courant (claire en sombre, foncée en clair). Marche dans les deux
 // thèmes sans connaître le fond, grâce à color-mix et à la variable --ink.
-export function legible(color, pct = 65) {
-  return `color-mix(in srgb, ${color} ${pct}%, var(--ink))`;
+export function legible(color, pct = null) {
+  // Sans pourcentage explicite, on suit --mix : réglé par thème pour garder le contraste AA.
+  return `color-mix(in srgb, ${color} ${pct === null ? "var(--mix, 50%)" : pct + "%"}, var(--ink))`;
 }

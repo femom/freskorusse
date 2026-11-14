@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { cases, caseColors, caseAbbr, caseInfo, fixNotes, hardSoftRule, takeaways } from "../data/cases.js";
 import { extraExamples, recognitionItems } from "../data/caseExtras.js";
@@ -11,7 +11,7 @@ import { EndingsTable, SpecialEndingsTable } from "../components/EndingsTable.js
 import WordDeclension from "./WordDeclension.jsx";
 import Prepositions from "./Prepositions.jsx";
 import SpeakButton from "../components/SpeakButton.jsx";
-import { Link } from "../lib/router.jsx";
+import { Link, useRoute } from "../lib/router.jsx";
 import { badgeColors } from "../lib/color.js";
 import { shuffle } from "../lib/text.js";
 import { buildRecognitionQuestions } from "../lib/recognition.js";
@@ -88,6 +88,11 @@ function CaseCard({ c, index }) {
 export default function Cases({ selected, addXp }) {
   const [lessonOpen, setLessonOpen] = useState(false);
   const [recognitionOpen, setRecognitionOpen] = useState(false);
+  // Arrivée depuis le « défi du jour » de l'accueil : #/cas?defi=1 ouvre directement l'exercice.
+  const route = useRoute();
+  useEffect(() => {
+    if (!selected && route.query.get("defi") === "1") setRecognitionOpen(true);
+  }, [route.hash]);
   // 12 phrases tirées au hasard à chaque ouverture de l'exercice de reconnaissance.
   const recognitionQuestions = useMemo(
     () => shuffle(buildRecognitionQuestions()).slice(0, RECOGNITION_SESSION),

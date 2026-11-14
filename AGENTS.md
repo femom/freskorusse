@@ -52,7 +52,10 @@ Aucune dépendance de routage ni d'UI : toute nouvelle dépendance doit être ju
     (`setBusy` dans `GameShell`). Voir `docs/pwa.md`.
 12. **Sons** : `src/lib/sound.js` uniquement, synthétisés (pas de fichier audio), volume bas, toujours
     déclenchés par un geste de l'utilisateur, toujours coupables.
-13. **Affichage** : ne pas retirer `color-scheme` (bandes blanches en thème sombre) ni le masquage des barres de
+13. **Design** : voir `docs/brand.md`. Deux thèmes (Lavande, Nuit prune), style « verre » (pas de contour noir
+    épais), police Onest embarquée. Toute nouvelle couleur passe par une variable CSS et par `tests/theme.test.js`
+    (AA minimum, plafond de contraste pour le confort). Jamais de blanc pur ni de noir pur.
+    **Affichage** : ne pas retirer `color-scheme` (bandes blanches en thème sombre) ni le masquage des barres de
     défilement (demande produit : aucune barre visible). Les champs de filtre passent par `FilterInput`.
 14. **Contenu des cas** : le contenu d'origine (`cases.js`) ne se modifie pas ; les ajouts vont dans
     `caseExtras.js` et sont vérifiés par `tests/case-extras.test.js`. Une phrase de reconnaissance doit avoir un

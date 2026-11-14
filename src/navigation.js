@@ -5,7 +5,6 @@ import {
 import { cases } from "./data/cases.js";
 import { verbs } from "./data/verbs.js";
 import { wordBank } from "./data/wordbank.js";
-import { phrases, phraseCategories } from "./data/phrases.js";
 
 // Source unique de vérité pour la navigation : la barre latérale (desktop), la
 // barre d'onglets (mobile), l'accueil, la page « Plus » et la recherche lisent
@@ -29,7 +28,7 @@ export const MODULES = [
     desc: `${wordBank.length} mots russes proches du français, en flashcards à retourner.` },
   { key: "phrases", label: "Phrases utiles", icon: MessageCircle, color: "var(--accent-phrases)",
     title: "Phrases utiles",
-    desc: `${phrases.length} phrases en ${phraseCategories.length} catégories pour ton arrivée en Russie.` },
+    desc: "Visa, université, logement, vie quotidienne : pour ton arrivée." },
   { key: "library", label: "Bibliothèque", icon: BookMarked, color: "var(--accent-library-b)",
     title: "Bibliothèque",
     desc: "Un texte tiré au hasard, niveau surprise, du débutant à l'avancé." },

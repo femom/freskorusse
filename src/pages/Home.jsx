@@ -1,15 +1,52 @@
 import React, { useMemo } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Zap, Star, Swords } from "lucide-react";
 import { Link, parseHash } from "../lib/router.jsx";
 import { readStorage, LAST_ROUTE_KEY } from "../lib/hooks.js";
-import { MODULES, describeRoute } from "../navigation.js";
+import { MODULES, MODULE_BY_KEY, describeRoute } from "../navigation.js";
+import { useStats, computeStreak, weekDays, dayKey } from "../lib/stats.js";
 
 // Les modules présentés en cartes : même liste que la navigation (navigation.js).
 const CARDS = MODULES.filter((m) => m.key !== "home");
 
-// Page d'accueil : « Reprendre » (dernier écran visité), grille des modules et
-// footer avec les infos de l'auteur. Chaque carte est un vrai lien.
-export default function Home({ appName }) {
+// Recommandations de la page d'accueil (le défi du jour a sa propre carte).
+const PICKS = [
+  { to: "cases", sub: "mot", tag: "Outil", title: "Un mot dans les 6 cas", text: "Tape ton mot, vois ses 12 formes.", letter: "Ж", tone: "pink" },
+  { to: "cases", sub: "prepositions", tag: "Référence", title: "Prépositions et cas", text: "Quelle préposition, quel cas ?", letter: "П", tone: "mint" },
+  { to: "dictation", tag: "Pratique", title: "Dictée", text: "Écoute, puis écris en russe.", letter: "Ч", tone: "butter" },
+  { to: "translation", tag: "Pratique", title: "Traduction", text: "Français et russe, à ton rythme.", letter: "Я", tone: "lilac" },
+];
+
+// Cubes de l'alphabet : la signature visuelle de FreskoRusse (décoratif, masqué pour les lecteurs d'écran).
+function LetterBlocks() {
+  return (
+    <div className="letter-art" aria-hidden="true">
+      <span className="lb a">А</span>
+      <span className="lb b">Б</span>
+      <span className="lb v">В</span>
+    </div>
+  );
+}
+
+function StatChip({ tone, icon, value, label }) {
+  return (
+    <div className={"stat-chip " + tone}>
+      <span className="stat-icon" aria-hidden="true">{icon}</span>
+      <div>
+        <b>{value}</b>
+        <span>{label}</span>
+      </div>
+    </div>
+  );
+}
+
+// Page d'accueil : salutation, statistiques, reprise, recommandations, série de jours, défi, tous les modules.
+export default function Home({ xp = 0 }) {
+  const stats = useStats();
+  const now = new Date();
+  const streak = computeStreak(stats.days, now);
+  const week = weekDays(stats.days, now);
+  const todayDone = stats.days.includes(dayKey(now));
+
   // Dernier écran consulté, mémorisé par App : permet de reprendre en un tap.
   const resume = useMemo(() => {
     const hash = readStorage(LAST_ROUTE_KEY, "");
@@ -19,21 +56,82 @@ export default function Home({ appName }) {
     return info.resume ? { route, label: info.resume } : null;
   }, []);
 
+  const subtitle = stats.days.length === 0
+    ? "Bienvenue ! Choisis un module pour commencer."
+    : todayDone
+      ? "Bravo, ta journée est validée. Tu peux continuer si tu veux."
+      : "Fais un exercice aujourd'hui pour valider ta journée.";
+
   return (
-    <section>
-      <h1 className="title">{appName || "FreskoRusse"}</h1>
-      <p className="subtitle">Ton espace d'entraînement complet : cas, conjugaison, vocabulaire, dictée et traduction.</p>
+    <section className="home">
+      <h1 className="title">Привет !</h1>
+      <p className="subtitle">{subtitle}</p>
 
-      {resume && (
-        <Link to={resume.route.module} sub={resume.route.sub} className="card resume-card">
-          <div>
-            <div className="resume-kicker">Reprendre</div>
-            <div className="resume-label">{resume.label}</div>
+      <div className="home-grid">
+        <div className="home-main">
+          <div className="stat-row">
+            <StatChip tone="butter" icon={<Star size={26} fill="currentColor" />} value={xp} label="Points XP" />
+            <StatChip tone="lilac" icon={<Zap size={26} fill="currentColor" />} value={streak} label={streak > 1 ? "Jours de suite" : "Jour de suite"} />
+            <StatChip tone="mint" icon="Б" value={stats.lessons} label={stats.lessons > 1 ? "Leçons faites" : "Leçon faite"} />
+            <StatChip tone="pink" icon="Я" value={stats.words.length} label={stats.words.length > 1 ? "Mots vus" : "Mot vu"} />
           </div>
-          <ArrowRight size={20} aria-hidden="true" />
-        </Link>
-      )}
 
+          <section aria-labelledby="home-resume">
+            <h2 className="block-title" id="home-resume">{resume ? "Reprendre" : "Commencer"}</h2>
+            <div className="card glass home-hero">
+              <LetterBlocks />
+              <div className="hero-text">
+                <span className="pick-tag">{resume ? "Dernière visite" : "Pour débuter"}</span>
+                <h3>{resume ? resume.label : "Les cas russes"}</h3>
+                <p>{resume ? "Retrouve l'endroit où tu t'étais arrêté." : "Les 6 cas, un par un, avec des exercices."}</p>
+                <Link
+                  to={resume ? resume.route.module : "cases"}
+                  sub={resume ? resume.route.sub : undefined}
+                  className="btn-home"
+                >
+                  {resume ? "Reprendre" : "Commencer"} <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section aria-labelledby="home-picks">
+            <h2 className="block-title" id="home-picks">Pour toi</h2>
+            <div className="pick-grid">
+              {PICKS.map((p) => (
+                <Link key={p.title} to={p.to} sub={p.sub} className={"card glass pick " + p.tone}>
+                  <span className="pick-letter" aria-hidden="true">{p.letter}</span>
+                  <span className="pick-tag">{p.tag}</span>
+                  <h3>{p.title}</h3>
+                  <p>{p.text}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="home-side" aria-label="Série et défi">
+          <section className="card glass streak-card" aria-labelledby="home-streak">
+            <h2 id="home-streak">{streak > 0 ? `Série de ${streak} ${streak > 1 ? "jours" : "jour"}` : "Pas encore de série"}</h2>
+            <ul className="week" aria-label="Jours validés cette semaine">
+              {week.map((d) => (
+                <li key={d.key} className={(d.done ? "done " : "") + (d.today ? "today" : "")} aria-label={`${d.name}${d.done ? ", validé" : ""}${d.today ? ", aujourd'hui" : ""}`}>
+                  {d.done ? <Zap size={15} fill="currentColor" aria-hidden="true" /> : d.label}
+                </li>
+              ))}
+            </ul>
+            <p>{todayDone ? "Journée validée. À demain !" : "Réponds à une question pour valider ta journée."}</p>
+          </section>
+
+          <section className="card glass challenge-card" aria-labelledby="home-challenge">
+            <h2 id="home-challenge"><Swords size={20} aria-hidden="true" /> Défi du jour</h2>
+            <p>Reconnaître le cas : 12 phrases, 3 vies.</p>
+            <Link to="cases" query={{ defi: "1" }} className="btn-home on-pastel">Relever le défi <ArrowRight size={18} aria-hidden="true" /></Link>
+          </section>
+        </aside>
+      </div>
+
+      <h2 className="block-title">Tous les modules</h2>
       <div className="module-cards">
         {CARDS.map((m) => (
           <Link to={m.key} className="card module-card" key={m.key}>

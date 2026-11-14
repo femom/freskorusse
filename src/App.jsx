@@ -117,7 +117,7 @@ export default function App() {
       <MobileTopBar title={info.title} parent={info.parent} xp={xp} onSearch={openSearch} />
 
       <main id="contenu" ref={mainRef} tabIndex={-1}>
-        {route.module === "home" && <Home appName={APP_NAME} />}
+        {route.module === "home" && <Home xp={xp} />}
         {route.module === "cases" && <Cases selected={route.sub} addXp={addXp} />}
         {route.module === "verbs" && <Verbs selected={route.sub} addXp={addXp} />}
         {route.module === "bank" && <Bank addXp={addXp} />}

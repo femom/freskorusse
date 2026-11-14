@@ -28,7 +28,7 @@ export default function Library(){
   useEffect(()=>{ setShowFr(false); }, [current.id]);
 
   const level = libraryLevels[current.level];
-  const levelColor = legible(level.color, 70);
+  const levelColor = legible(level.color);
 
   return (
     <section>

@@ -2,6 +2,7 @@
 // utilisés par l'app (dialog natif, défilement, matchMedia, voix de synthèse).
 import { afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
+import { __resetStatsForTests } from "../src/lib/stats.js";
 
 HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
 HTMLDialogElement.prototype.close = function () {
@@ -15,6 +16,7 @@ window.matchMedia = window.matchMedia || ((q) => ({ matches: false, media: q, ad
 
 afterEach(() => {
   cleanup();
+  __resetStatsForTests();
   window.location.hash = "";
   localStorage.clear();
 });
