@@ -3,6 +3,8 @@ import { Shuffle } from "lucide-react";
 import { wordBank } from "../data/wordbank.js";
 import LessonEngine from "../components/LessonEngine.jsx";
 import { shuffle } from "../lib/text.js";
+import { play } from "../lib/sound.js";
+import FilterInput from "../components/FilterInput.jsx";
 import { useRoute } from "../lib/router.jsx";
 
 const QUIZ_SIZE = 15;
@@ -21,7 +23,8 @@ function FlipCard({ word, flipped, onToggle, className = "", faceClass = "" }){
   const [local, setLocal] = useState(false);
   const controlled = flipped !== undefined;
   const isFlipped = controlled ? flipped : local;
-  const toggle = controlled ? onToggle : ()=> setLocal(f=>!f);
+  const flip = controlled ? onToggle : ()=> setLocal(f=>!f);
+  const toggle = ()=> { play("flip"); flip(); };
   return (
     <div
       className={"flip-card " + className + (isFlipped ? " flipped" : "")}
@@ -107,7 +110,7 @@ export default function Bank({ addXp }){
       </div>
 
       <h2 className="block-title">Parcourir</h2>
-      <input type="search" className="search-box filter-input" aria-label="Chercher un mot" placeholder="Chercher un mot (russe ou français)…" value={search} onChange={e=>setSearch(e.target.value)}/>
+      <FilterInput label="Chercher un mot" placeholder="Chercher un mot (russe ou français)…" value={search} onChange={setSearch} />
 
       <div className="letter-tabs" role="group" aria-label="Filtrer par lettre">
         <button type="button" aria-pressed={activeLetter===null} className={"letter-tab" + (activeLetter===null ? " active" : "")} onClick={()=> setActiveLetter(null)}>Tout</button>

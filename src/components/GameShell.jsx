@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { X, Heart, CheckCircle2, XCircle } from "lucide-react";
+import { setBusy } from "../lib/pwa.js";
+import { play } from "../lib/sound.js";
 
 // Coque commune des trois jeux (leçons, dictée, traduction) : plein écran,
 // barre de progression, bouton quitter.
@@ -21,7 +23,10 @@ export default function GameShell({ title, accent, progress, inProgress, right, 
     }
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden"; // pas de défilement de la page derrière
+    setBusy(true); // un exercice est ouvert : une mise à jour attendra sa fermeture
+    play("start");
     return () => {
+      setBusy(false);
       document.body.style.overflow = previousOverflow;
       if (dialog && dialog.open) dialog.close();
     };
@@ -93,7 +98,7 @@ export function Hearts({ count, max = 3 }) {
 
 // Retour après réponse (« Correct ! » / « Pas tout à fait » + réponse attendue).
 // aria-live : les lecteurs d'écran l'annoncent sans qu'on ait à le chercher.
-export function Feedback({ answered, correct, expected }) {
+export function Feedback({ answered, correct, expected, hint = null }) {
   return (
     <>
       <div className={"game-feedback " + (answered ? (correct ? "ok" : "bad") : "")} role="status" aria-live="polite">
@@ -103,6 +108,7 @@ export function Feedback({ answered, correct, expected }) {
       </div>
       <div className="game-explain">
         {answered && !correct ? "Réponse attendue : " + expected : ""}
+        {answered && hint && <span className="hint">{hint}</span>}
       </div>
     </>
   );

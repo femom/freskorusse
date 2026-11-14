@@ -26,6 +26,7 @@
 | Phrases (catégorie, phrase) | `#/phrases/logement` · `#/phrases/logement?id=3` |
 | Bibliothèque (texte) | `#/bibliotheque` · `#/bibliotheque/0` |
 | Un mot dans les 6 cas | `#/cas/mot` · `#/cas/mot?m=книга&a=0` |
+| Prépositions et cas | `#/cas/prepositions` · `#/cas/prepositions?q=в` |
 | Dictée · Traduction · Plus | `#/dictee` · `#/traduction` · `#/plus` |
 
 Une route inconnue retombe sur l'accueil. Un sous-élément inconnu affiche la liste du module.

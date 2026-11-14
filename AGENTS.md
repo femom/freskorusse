@@ -11,6 +11,8 @@ Aucune dépendance de routage ni d'UI : toute nouvelle dépendance doit être ju
 - `npm run dev` : serveur de développement
 - `npm test` : tests (à lancer après CHAQUE modification)
 - `npm run build` : build de production (vérifie aussi que tout compile)
+- `npm run verify:offline` : contrôle le build (cache hors-ligne complet, aucune ressource externe, manifest)
+- `npm run check` : tests + build + contrôle hors-ligne, à lancer avant de livrer
 
 ## Architecture en couches (ne pas sauter de couche)
 | Couche | Dossier | Rôle |
@@ -45,7 +47,18 @@ Aucune dépendance de routage ni d'UI : toute nouvelle dépendance doit être ju
    de `src/data/` (jamais sur une saisie utilisateur ni sur l'URL). La saisie de l'outil « un mot » est
    normalisée et validée (lettres cyrilliques seulement) avant tout calcul.
 10. **Stockage** : clés `localStorage` existantes (`russe_app_xp`, `freskorusse_theme`) à ne pas renommer.
-11. **Commits** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`).
+11. **PWA** : tout passe par `src/lib/pwa.js` (installation, mises à jour, réseau). Aucune ressource externe
+    (police, image, API) : elle casserait le hors-ligne. Une mise à jour ne doit jamais interrompre un exercice
+    (`setBusy` dans `GameShell`). Voir `docs/pwa.md`.
+12. **Sons** : `src/lib/sound.js` uniquement, synthétisés (pas de fichier audio), volume bas, toujours
+    déclenchés par un geste de l'utilisateur, toujours coupables.
+13. **Affichage** : ne pas retirer `color-scheme` (bandes blanches en thème sombre) ni le masquage des barres de
+    défilement (demande produit : aucune barre visible). Les champs de filtre passent par `FilterInput`.
+14. **Contenu des cas** : le contenu d'origine (`cases.js`) ne se modifie pas ; les ajouts vont dans
+    `caseExtras.js` et sont vérifiés par `tests/case-extras.test.js`. Une phrase de reconnaissance doit avoir un
+    cas déterminé sans ambiguïté par le contexte, avec un indice. Voir `docs/cases-content.md`.
+15. **Audio** : tout bouton « écouter » passe par `SpeakButton` (il explique quand le son est impossible).
+16. **Commits** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`).
 
 ## Avant de rendre un travail
 `npm test` vert, `npm run build` OK, parcours manuel sur mobile (barre d'onglets, retour arrière) et sur desktop.

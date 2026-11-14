@@ -5,6 +5,7 @@ import { verbs } from "../data/verbs.js";
 import { wordBank } from "../data/wordbank.js";
 import { phrases } from "../data/phrases.js";
 import { libraryTexts } from "../data/library.js";
+import { prepositionTable } from "../data/caseExtras.js";
 import { foldForSearch } from "../lib/text.js";
 import { navigate } from "../lib/router.jsx";
 import { MODULES } from "../navigation.js";
@@ -39,6 +40,18 @@ const INDEX = [
     haystack: foldForSearch(`${t.titleFr} ${t.title}`),
     go: () => navigate("library", t.id),
   })),
+  ...prepositionTable.map((p) => ({
+    group: "Prépositions",
+    label: `${p.ru} : ${p.uses.map((u) => cases.find((c) => c.key === u.case).label).join(" ou ")}`,
+    hint: p.uses[0].meaning,
+    haystack: foldForSearch(`${p.ru} ${p.uses.map((u) => u.meaning).join(" ")} preposition`),
+    go: () => navigate("cases", "prepositions", { query: { q: p.ru.split(" / ")[0] } }),
+  })),
+  {
+    group: "Modules", label: "Prépositions et cas", hint: "Quelle préposition, quel cas ?",
+    haystack: foldForSearch("Prépositions et cas preposition quel cas"),
+    go: () => navigate("cases", "prepositions"),
+  },
   {
     group: "Modules", label: "Décliner un mot", hint: "Un mot dans les 6 cas",
     haystack: foldForSearch("Décliner un mot declinaison un mot dans les 6 cas"),
@@ -50,7 +63,7 @@ const INDEX = [
     go: () => navigate(m.key),
   })),
 ];
-const GROUP_ORDER = ["Modules", "Cas", "Verbes", "Mots", "Phrases", "Textes"];
+const GROUP_ORDER = ["Modules", "Cas", "Prépositions", "Verbes", "Mots", "Phrases", "Textes"];
 
 // Palette de recherche globale (modale). Notion : pattern « combobox + listbox »
 // ARIA — le focus reste dans le champ, les flèches déplacent la sélection

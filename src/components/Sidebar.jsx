@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link } from "../lib/router.jsx";
 import { MODULE_BY_KEY, NAV_GROUPS } from "../navigation.js";
-import { XpBadge, ThemeToggle, InstallButton } from "./SettingsControls.jsx";
+import { XpBadge, ThemeToggle, SoundToggle, InstallButton, OfflineStatus, NetPill } from "./SettingsControls.jsx";
 
 // Une entrée de navigation. C'est un vrai lien (<a href="#/...">) : on peut
 // l'ouvrir dans un nouvel onglet et les lecteurs d'écran l'annoncent comme tel.
@@ -30,7 +30,7 @@ function NavItem({ meta, active, compact }) {
 // Pratiquer / Consulter). Plus de sous-liste des 62 verbes : la page du module
 // affiche déjà cette liste, avec filtre.
 export default function Sidebar({
-  module, collapsed, onToggleCollapsed, onSearch, xp, theme, onToggleTheme, install,
+  module, collapsed, onToggleCollapsed, onSearch, xp, theme, onToggleTheme,
 }) {
   return (
     <nav className="side" aria-label="Navigation principale">
@@ -88,9 +88,21 @@ export default function Sidebar({
       ))}
 
       <div className="side-footer">
+        <NetPill className="side" />
         {!collapsed && <XpBadge xp={xp} />}
-        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact={collapsed} />
-        <InstallButton install={install} compact={collapsed} />
+        {collapsed ? (
+          <>
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+            <SoundToggle compact />
+          </>
+        ) : (
+          <div className="settings-row">
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+            <SoundToggle compact />
+          </div>
+        )}
+        <InstallButton compact={collapsed} />
+        {!collapsed && <OfflineStatus />}
       </div>
     </nav>
   );

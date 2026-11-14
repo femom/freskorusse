@@ -5,6 +5,7 @@ import {
 } from "../data/verbs.js";
 import LessonEngine from "../components/LessonEngine.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
+import FilterInput from "../components/FilterInput.jsx";
 import Pager from "../components/Pager.jsx";
 import { Link } from "../lib/router.jsx";
 import { shuffle } from "../lib/text.js";
@@ -130,7 +131,7 @@ export default function Verbs({ selected, addXp }){
         </div>
 
         <h2 className="block-title">Tous les verbes ({filtered.length === verbs.length ? verbs.length : `${filtered.length} sur ${verbs.length}`})</h2>
-        <input type="search" className="search-box filter-input" aria-label="Filtrer les verbes" placeholder="Filtrer les verbes (français ou russe)…" value={filter} onChange={e=>setFilter(e.target.value)}/>
+        <FilterInput label="Filtrer les verbes" placeholder="Filtrer les verbes (français ou russe)…" value={filter} onChange={setFilter} />
         <div className="verb-cards">
           {filtered.map(v=>{
             const bg = groupColor[v.imp.group];

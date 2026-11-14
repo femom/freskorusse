@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft, Search, Star } from "lucide-react";
 import { Link } from "../lib/router.jsx";
+import { NetPill } from "./SettingsControls.jsx";
 
 // Barre du haut (mobile). Sur une page de détail (un cas, un verbe), la flèche
 // ramène TOUJOURS à la liste du module — jamais hors de l'app. Ailleurs, on
@@ -16,6 +17,7 @@ export default function MobileTopBar({ title, parent, xp, onSearch }) {
         <Link to="home" className="topbar-logo" aria-label="FreskoRusse, accueil">РУ</Link>
       )}
       <div className="topbar-title">{title}</div>
+      <NetPill />
       <div className="topbar-xp" aria-label={`${xp} points d'expérience`}>
         <Star size={13} fill="currentColor" aria-hidden="true" />
         {xp}

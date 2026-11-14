@@ -2,12 +2,12 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 import { Link } from "../lib/router.jsx";
 import { MODULE_BY_KEY, NAV_GROUPS, TAB_KEYS } from "../navigation.js";
-import { XpBadge, ThemeToggle, InstallButton } from "../components/SettingsControls.jsx";
+import { XpBadge, ThemeToggle, SoundToggle, InstallButton, OfflineStatus } from "../components/SettingsControls.jsx";
 
 // Page « Plus » (surtout mobile) : les modules qui n'ont pas leur propre onglet,
 // regroupés comme dans la barre latérale desktop, puis les réglages (progression,
 // thème, installation). Remplace l'ancien tiroir hamburger.
-export default function More({ xp, theme, onToggleTheme, install }) {
+export default function More({ xp, theme, onToggleTheme }) {
   const groups = NAV_GROUPS
     .map((g) => ({ ...g, keys: g.keys.filter((k) => !TAB_KEYS.includes(k)) }))
     .filter((g) => g.keys.length > 0);
@@ -44,7 +44,9 @@ export default function More({ xp, theme, onToggleTheme, install }) {
       <div className="more-settings">
         <XpBadge xp={xp} />
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-        <InstallButton install={install} />
+        <SoundToggle />
+        <InstallButton />
+        <OfflineStatus />
       </div>
     </section>
   );

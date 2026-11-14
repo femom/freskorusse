@@ -4,6 +4,10 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./styles.css";
+import { initPwa } from "./lib/pwa.js";
 
 const root = createRoot(document.getElementById("root"));
 root.render(<App />);
+
+// Enregistre le service worker (hors-ligne + mises à jour automatiques) : version construite uniquement.
+initPwa();

@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <!-- Couleur de la barre du navigateur/status bar mobile : accordée au thème sombre par défaut -->
   <meta name="theme-color" content="#10151F">
-  <title>FreskoRusse — Cas, verbes, dictée, traduction</title>
+  <meta name="color-scheme" content="dark light">
+  <!-- Applique le thème enregistré AVANT le premier affichage : pas d'éclair de la mauvaise couleur -->
+  <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("freskorusse_theme")||"dark")}catch(e){}</script>
+  <title>FreskoRusse : cas, verbes, dictée, traduction</title>
   <link rel="icon" href="/icon-192.png">
   <link rel="apple-touch-icon" href="/icon-192.png">
 </head>

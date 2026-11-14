@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ArrowRight, Wand2 } from "lucide-react";
 import { cases, caseColors, caseAbbr, caseInfo, fixNotes, hardSoftRule, takeaways } from "../data/cases.js";
+import { extraExamples, recognitionItems } from "../data/caseExtras.js";
 import LessonEngine from "../components/LessonEngine.jsx";
 import RuleBox from "../components/RuleBox.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -8,8 +9,14 @@ import Pager from "../components/Pager.jsx";
 import CasesTabs from "../components/CasesTabs.jsx";
 import { EndingsTable, SpecialEndingsTable } from "../components/EndingsTable.jsx";
 import WordDeclension from "./WordDeclension.jsx";
+import Prepositions from "./Prepositions.jsx";
+import SpeakButton from "../components/SpeakButton.jsx";
 import { Link } from "../lib/router.jsx";
 import { badgeColors } from "../lib/color.js";
+import { shuffle } from "../lib/text.js";
+import { buildRecognitionQuestions } from "../lib/recognition.js";
+
+const RECOGNITION_SESSION = 12;
 
 const PAGER_ITEMS = cases.map((c) => ({ key: c.key, label: c.label }));
 
@@ -76,11 +83,19 @@ function CaseCard({ c, index }) {
 // Page « Les cas ». Trois affichages, décidés par l'adresse :
 //   #/cas       : vue d'ensemble (cartes, récapitulatif, à retenir)
 //   #/cas/mot   : outil « un mot dans les 6 cas »
+//   #/cas/prepositions : « quelle préposition, quel cas ? »
 //   #/cas/acc   : détail d'un cas (rôle, terminaisons, cas particuliers, exemples, leçon)
 export default function Cases({ selected, addXp }) {
   const [lessonOpen, setLessonOpen] = useState(false);
+  const [recognitionOpen, setRecognitionOpen] = useState(false);
+  // 12 phrases tirées au hasard à chaque ouverture de l'exercice de reconnaissance.
+  const recognitionQuestions = useMemo(
+    () => shuffle(buildRecognitionQuestions()).slice(0, RECOGNITION_SESSION),
+    [recognitionOpen]
+  );
 
   if (selected === "mot") return <WordDeclension />;
+  if (selected === "prepositions") return <Prepositions />;
 
   const active = cases.find((c) => c.key === selected);
 
@@ -94,6 +109,15 @@ export default function Cases({ selected, addXp }) {
 
         <div className="case-grid">
           {cases.map((c, i) => <CaseCard key={c.key} c={c} index={i} />)}
+        </div>
+
+        <h2 className="block-title">Entraînement : reconnaître le cas</h2>
+        <div className="lesson-launch" style={{ "--lesson-accent": "var(--accent-cases)" }}>
+          <div className="info">
+            <h3>{RECOGNITION_SESSION} phrases au hasard sur {recognitionItems.length}</h3>
+            <p>Un mot est souligné dans une vraie phrase : dis dans quel cas il est. Chaque réponse est expliquée. 3 vies.</p>
+          </div>
+          <button type="button" className="btn-start" onClick={() => setRecognitionOpen(true)}>Démarrer ▶</button>
         </div>
 
         <h2 className="block-title">Récapitulatif des {cases.length} cas</h2>
@@ -136,6 +160,16 @@ export default function Cases({ selected, addXp }) {
 
         <h2 className="block-title">{hardSoftRule.title}</h2>
         <RuleBox points={hardSoftRule.points} />
+
+        {recognitionOpen && (
+          <LessonEngine
+            questions={recognitionQuestions}
+            title="Reconnaître le cas"
+            accent="var(--accent-cases)"
+            onClose={() => setRecognitionOpen(false)}
+            onFinish={(xp) => addXp(xp)}
+          />
+        )}
       </section>
     );
   }
@@ -186,7 +220,7 @@ export default function Cases({ selected, addXp }) {
 
       <h2 className="block-title">Exemples</h2>
       <div className="example-grid">
-        {active.examples.map((ex, i) => {
+        {[...active.examples, ...(extraExamples[active.key] || [])].map((ex, i) => {
           // ex = [genre, phrase russe, phonétique (non affichée), traduction, mot mis en évidence]
           const word = ex[4];
           const parts = ex[1].split(word); // on découpe la phrase autour du mot à surligner
@@ -195,6 +229,7 @@ export default function Cases({ selected, addXp }) {
               <span className="tag">{ex[0]}</span>
               <div className="ru" lang="ru">{parts[0]}<span className="hl">{word}</span>{parts.slice(1).join(word)}</div>
               <div className="fr">{ex[3]} <span className="word-ref">({word})</span></div>
+              <SpeakButton text={ex[1]} ariaLabel={`Écouter : ${ex[3]}`} />
             </div>
           );
         })}

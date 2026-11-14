@@ -5,6 +5,7 @@ import {
 import { cases } from "./data/cases.js";
 import { verbs } from "./data/verbs.js";
 import { wordBank } from "./data/wordbank.js";
+import { phrases, phraseCategories } from "./data/phrases.js";
 
 // Source unique de vérité pour la navigation : la barre latérale (desktop), la
 // barre d'onglets (mobile), l'accueil, la page « Plus » et la recherche lisent
@@ -28,7 +29,7 @@ export const MODULES = [
     desc: `${wordBank.length} mots russes proches du français, en flashcards à retourner.` },
   { key: "phrases", label: "Phrases utiles", icon: MessageCircle, color: "var(--accent-phrases)",
     title: "Phrases utiles",
-    desc: "Visa, université, logement, vie quotidienne : pour ton arrivée." },
+    desc: `${phrases.length} phrases en ${phraseCategories.length} catégories pour ton arrivée en Russie.` },
   { key: "library", label: "Bibliothèque", icon: BookMarked, color: "var(--accent-library-b)",
     title: "Bibliothèque",
     desc: "Un texte tiré au hasard, niveau surprise, du débutant à l'avancé." },
@@ -64,6 +65,9 @@ export function describeRoute({ module, sub }) {
   const meta = MODULE_BY_KEY[module] || MODULE_BY_KEY.home;
   if (module === "cases" && sub === "mot") {
     return { title: "Un mot dans les cas", parent: { module: "cases", label: meta.label }, resume: `${meta.label} · Un mot dans les cas` };
+  }
+  if (module === "cases" && sub === "prepositions") {
+    return { title: "Prépositions et cas", parent: { module: "cases", label: meta.label }, resume: `${meta.label} · Prépositions` };
   }
   if (module === "cases" && sub) {
     const c = cases.find((x) => x.key === sub);

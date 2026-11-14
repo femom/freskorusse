@@ -141,6 +141,34 @@ body,
    height: 100%;
 }
 
+/* color-scheme dit au navigateur de quel thème sont ses éléments natifs (champs,
+   cases à cocher, <dialog>, barres de défilement). Sans lui, ils restent clairs :
+   c'est ce qui produisait les bandes blanches en thème sombre. */
+:root {
+   color-scheme: dark;
+}
+:root[data-theme="light"] {
+   color-scheme: light;
+}
+
+/* Le fond est aussi posé sur <html> : plus de bande claire derrière le contenu
+   (rebond de défilement sur mobile, fenêtre plus large que la page). */
+html {
+   background: var(--bg);
+}
+
+/* Aucune barre de défilement visible. Le défilement reste complet : molette,
+   pavé tactile, doigt, clavier (flèches, espace, Page haut/bas). */
+* {
+   scrollbar-width: none;
+   -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+   display: none;
+   width: 0;
+   height: 0;
+}
+
 body {
    background: var(--bg);
    color: var(--ink);
@@ -2028,10 +2056,6 @@ dialog.game-overlay:not([open]) {
 .word-ref {
    color: var(--ink-faint);
 }
-.filter-input {
-   max-width: 360px;
-   margin-bottom: 14px;
-}
 .results-count {
    font-size: 0.78rem;
    color: var(--ink-faint);
@@ -2054,6 +2078,12 @@ dialog.game-overlay:not([open]) {
 .phrase-item.is-highlighted {
    border-color: var(--accent-phrases);
    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-phrases) 30%, transparent);
+}
+.phrase-prononciation {
+   font-size: 0.82rem;
+   color: var(--ink-faint);
+   font-style: italic;
+   margin-top: 4px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -2466,4 +2496,337 @@ fieldset.seg {
       margin-bottom: 2px;
    }
    .recap-table tbody th { background: none; }
+}
+
+
+/* -----------------------------------------------------------------------------
+   FILTRES (verbes, banque de mots) : champ avec icône, bouton d'effacement, focus visible
+   ----------------------------------------------------------------------------- */
+.filter {
+   margin: 0 0 16px 0;
+   max-width: 460px;
+}
+.filter-field {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   min-height: 50px;
+   padding: 0 8px 0 16px;
+   border: 1px solid var(--line);
+   border-radius: 16px;
+   background: var(--card);
+   color: var(--ink-soft);
+   transition: border-color .15s ease, box-shadow .15s ease, background-color .2s ease;
+}
+.filter-field:hover {
+   border-color: var(--ink-faint);
+}
+.filter-field:focus-within {
+   border-color: var(--accent-cases);
+   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-cases) 25%, transparent);
+   color: var(--ink);
+}
+.filter-input-el {
+   flex: 1;
+   min-width: 0;
+   padding: 12px 0;
+   border: none;
+   outline: none;
+   background: none;
+   color: var(--ink);
+   font: inherit;
+   font-size: 1rem; /* 16 px minimum : évite le zoom automatique d'iOS au focus */
+}
+.filter-input-el::placeholder {
+   color: var(--ink-soft);
+   opacity: 1;
+}
+.filter-input-el::-webkit-search-cancel-button,
+.filter-input-el::-webkit-search-decoration {
+   -webkit-appearance: none;
+   appearance: none;
+   display: none;
+}
+.filter-clear {
+   width: 36px;
+   height: 36px;
+   flex-shrink: 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   border: none;
+   border-radius: 10px;
+   background: none;
+   color: var(--ink-soft);
+   cursor: pointer;
+}
+.filter-clear:hover {
+   background: var(--bg);
+   color: var(--ink);
+}
+.filter-summary {
+   margin: 8px 0 0 4px;
+   font-size: 0.8rem;
+   color: var(--ink-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   PWA : installation, état hors-ligne, notifications
+   ----------------------------------------------------------------------------- */
+.settings-row {
+   display: flex;
+   gap: 8px;
+   margin: 0 6px 10px 6px;
+}
+.settings-row > .theme-toggle {
+   flex: 1;
+   margin: 0;
+   min-width: 0;
+}
+.icon-toggle {
+   width: 44px;
+   height: 44px;
+   flex-shrink: 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   border: 1px solid var(--line);
+   border-radius: var(--radius-sm);
+   background: transparent;
+   color: var(--ink-soft);
+   cursor: pointer;
+   transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.icon-toggle:hover {
+   border-color: var(--ink-faint);
+   color: var(--ink);
+   background: var(--bg);
+}
+.icon-toggle[aria-pressed="false"] {
+   color: var(--ink-faint);
+}
+.installed-pill {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 7px;
+   margin: 0 6px 10px 6px;
+   min-height: 44px;
+   padding: 9px 12px;
+   border-radius: var(--radius-sm);
+   border: 1px solid var(--line);
+   color: var(--ok-text);
+   font-size: 0.8rem;
+   font-weight: 700;
+}
+.offline-status {
+   margin: 0 6px 10px 6px;
+   padding: 0 4px;
+   font-size: 0.74rem;
+   line-height: 1.4;
+   color: var(--ink-soft);
+}
+.offline-status.ready {
+   color: var(--ok-text);
+}
+.more-settings .offline-status,
+.more-settings .installed-pill,
+.more-settings .settings-row {
+   margin-left: 0;
+   margin-right: 0;
+}
+
+.net-pill {
+   display: inline-flex;
+   align-items: center;
+   gap: 6px;
+   padding: 5px 10px;
+   border-radius: 999px;
+   font-size: 0.74rem;
+   font-weight: 700;
+   background: var(--accent-bank-soft);
+   border: 1px solid var(--accent-bank);
+   color: var(--ink);
+   white-space: nowrap;
+}
+.net-pill svg {
+   color: var(--accent-bank-text);
+}
+.net-pill.side {
+   margin: 0 6px 10px 6px;
+   justify-content: center;
+}
+
+dialog.install-dialog {
+   padding: 0;
+   border: 1px solid var(--line);
+   border-radius: var(--radius-lg);
+   background: var(--card);
+   color: var(--ink);
+   width: min(440px, calc(100vw - 24px));
+   max-width: none;
+   box-shadow: var(--shadow);
+}
+dialog.install-dialog::backdrop {
+   background: rgba(12, 14, 18, 0.55);
+}
+.install-dialog-body {
+   padding: 22px 22px 20px 22px;
+}
+.install-dialog h2 {
+   margin: 0 0 6px 0;
+   font-size: 1.15rem;
+}
+.install-dialog p {
+   color: var(--ink-soft);
+   font-size: 0.9rem;
+}
+.install-dialog ol {
+   margin: 12px 0 16px 0;
+   padding-left: 22px;
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   font-size: 0.92rem;
+}
+.install-dialog .btn-primary {
+   width: 100%;
+}
+
+.toast {
+   position: fixed;
+   z-index: 60;
+   left: 50%;
+   bottom: calc(var(--tabbar-h) + 18px + env(safe-area-inset-bottom));
+   transform: translateX(-50%);
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   max-width: min(420px, calc(100vw - 24px));
+   padding: 12px 16px;
+   border-radius: 14px;
+   border: 1px solid var(--line);
+   background: var(--card);
+   color: var(--ink);
+   box-shadow: var(--shadow);
+   font-size: 0.9rem;
+   animation: toast-in .25s ease;
+}
+.toast svg {
+   flex-shrink: 0;
+   color: var(--ok-text);
+}
+.toast-close {
+   margin-left: 4px;
+   width: 32px;
+   height: 32px;
+   flex-shrink: 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   border: none;
+   border-radius: 8px;
+   background: none;
+   color: var(--ink-soft);
+   cursor: pointer;
+}
+@keyframes toast-in {
+   from { opacity: 0; transform: translate(-50%, 8px); }
+   to { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (min-width: 1024px) {
+   .toast {
+      bottom: 24px;
+   }
+}
+
+/* -----------------------------------------------------------------------------
+   AUDIO, RECONNAISSANCE DU CAS, PRÉPOSITIONS
+   ----------------------------------------------------------------------------- */
+.speak-btn {
+   width: 40px;
+   height: 40px;
+   flex-shrink: 0;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   border: 1px solid var(--line);
+   border-radius: 50%;
+   background: var(--card);
+   color: var(--ink-soft);
+   cursor: pointer;
+   transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.speak-btn:hover {
+   border-color: var(--case-c, var(--accent-cases));
+   color: var(--ink);
+   background: color-mix(in srgb, var(--case-c, var(--accent-cases)) 12%, var(--card));
+}
+.speak-note {
+   display: block;
+   margin-top: 8px;
+   font-size: 0.78rem;
+   color: var(--ink-soft);
+}
+.phrase-item .speak-note {
+   grid-column: 1 / -1;
+}
+.example {
+   position: relative;
+}
+.example .speak-btn {
+   position: absolute;
+   top: 10px;
+   right: 10px;
+}
+.example .ru {
+   padding-right: 46px;
+}
+
+.game-card .q-ru.recognize u.target {
+   font-weight: 800;
+   text-decoration-line: underline;
+   text-decoration-thickness: 3px;
+   text-underline-offset: 7px;
+   text-decoration-color: var(--lesson-accent, var(--accent-cases));
+}
+.recognize-question {
+   margin: 4px 0 14px 0;
+   font-weight: 700;
+   font-size: 0.95rem;
+}
+.game-explain .hint {
+   display: block;
+   margin-top: 6px;
+   color: var(--ink);
+   font-size: 0.9rem;
+}
+
+.tip-card {
+   display: flex;
+   align-items: flex-start;
+   gap: 14px;
+}
+.tip-card svg {
+   flex-shrink: 0;
+   margin-top: 2px;
+   color: var(--accent-bank-text);
+}
+.tip-card p {
+   margin: 0;
+   font-size: 0.92rem;
+}
+.prep-cell {
+   width: 1%;
+   white-space: nowrap;
+   font-size: 1.15rem;
+   font-weight: 800;
+}
+.case-link {
+   font-weight: 700;
+   color: var(--ink);
+   text-decoration: none;
+}
+.case-link:hover {
+   text-decoration: underline;
 }

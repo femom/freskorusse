@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Trophy, HeartCrack } from "lucide-react";
 import { normalize, shuffle } from "../lib/text.js";
 import GameShell, { Hearts, Feedback, EndScreen } from "./GameShell.jsx";
+import { play } from "../lib/sound.js";
+import SpeakButton from "./SpeakButton.jsx";
 
 // Moteur de leçon générique réutilisé par les cas, les verbes ET la banque de
 // mots : 3 vies, XP, questions "à trous" (type="type") ou à choix multiples
@@ -30,12 +32,13 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
   function check(given){
     const ok = q.answer.map(normalize).includes(normalize(given));
     setAnswered(true); setCorrect(ok); setSelected(given);
+    play(ok ? "correct" : "wrong");
     if(ok) setXpGain(x=>x+10); else setHearts(h=>h-1);
   }
 
   function advance(){
-    if(hearts <= 0){ setFinished("lose"); return; }
-    if(pos+1 >= order.length){ setFinished("win"); onFinish(xpGain); return; }
+    if(hearts <= 0){ setFinished("lose"); play("lose"); return; }
+    if(pos+1 >= order.length){ setFinished("win"); play("win"); onFinish(xpGain); return; }
     setPos(p=>p+1);
   }
 
@@ -79,7 +82,19 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
       {!finished && q && (
         <div className={"game-card" + (answered ? (correct ? " card-pop" : " card-shake") : "")}>
           <div className="type-label">{title}</div>
-          <div className="q-ru">{q.prompt}<span className="b">{q.base}</span></div>
+          {q.sentence ? (
+            // Exercice de reconnaissance : le mot à analyser est souligné dans une vraie phrase.
+            <>
+              <div className="q-ru recognize">
+                <span lang="ru">{q.sentence.before}<u className="target">{q.sentence.word}</u>{q.sentence.after}</span>
+                <span className="b">{q.base}</span>
+              </div>
+              <SpeakButton text={q.sentence.before + q.sentence.word + q.sentence.after} label="Écouter la phrase" className="play-btn" />
+              <p className="recognize-question">Dans quel cas est le mot souligné ?</p>
+            </>
+          ) : (
+            <div className="q-ru">{q.prompt}<span className="b">{q.base}</span></div>
+          )}
 
           {q.type === "mcq" ? (
             <div className="mcq-grid">
@@ -92,7 +107,7 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
                 return (
                   <button type="button" key={opt} className={cls} disabled={answered}
                     aria-pressed={!answered && opt === selected}
-                    onClick={()=> setSelected(opt)}>
+                    onClick={()=> { play("select"); setSelected(opt); }}>
                     {opt}
                   </button>
                 );
@@ -106,7 +121,7 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
             />
           )}
 
-          <Feedback answered={answered} correct={correct} expected={q.answer[0]} />
+          <Feedback answered={answered} correct={correct} expected={q.answer[0]} hint={q.hint} />
 
           <div className="game-actions">
             {!answered ? (

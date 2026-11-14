@@ -17,7 +17,7 @@ describe("module Les cas : vue d'ensemble", () => {
     await waitFor(() => expect(document.querySelectorAll("a.case-card")).toHaveLength(cases.length));
 
     const tabs = screen.getByRole("navigation", { name: "Vues du module Les cas" });
-    expect(within(tabs).getAllByRole("link").map((a) => a.getAttribute("href"))).toEqual(["#/cas", "#/cas/mot"]);
+    expect(within(tabs).getAllByRole("link").map((a) => a.getAttribute("href"))).toEqual(["#/cas", "#/cas/mot", "#/cas/prepositions"]);
 
     const recap = screen.getByRole("table", { name: /Récapitulatif/ });
     expect(within(recap).getAllByRole("row")).toHaveLength(cases.length + 1); // + en-tête

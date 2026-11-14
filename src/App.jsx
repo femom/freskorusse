@@ -14,9 +14,11 @@ import MobileTopBar from "./components/MobileTopBar.jsx";
 import SearchPalette from "./components/SearchPalette.jsx";
 import { useRoute, consumeIntent, savedScroll } from "./lib/router.jsx";
 import {
-  useXp, useTheme, useInstallPrompt, readStorage, writeStorage,
+  useXp, useTheme, readStorage, writeStorage,
   LAST_ROUTE_KEY, SIDEBAR_KEY,
 } from "./lib/hooks.js";
+import { usePwa } from "./lib/pwa.js";
+import Toast from "./components/Toast.jsx";
 import { describeRoute } from "./navigation.js";
 
 // Nom affiché de l'application. Le nom "technique" du projet (package.json,
@@ -38,7 +40,7 @@ export default function App() {
   const info = describeRoute(route);
   const [xp, addXp] = useXp();
   const [theme, toggleTheme] = useTheme();
-  const install = useInstallPrompt();
+  const pwa = usePwa();
   const [collapsed, setCollapsed] = useState(() => readStorage(SIDEBAR_KEY, "0") === "1");
   const [searchOpen, setSearchOpen] = useState(false);
   const mainRef = useRef(null);
@@ -110,7 +112,6 @@ export default function App() {
         xp={xp}
         theme={theme}
         onToggleTheme={toggleTheme}
-        install={install}
       />
 
       <MobileTopBar title={info.title} parent={info.parent} xp={xp} onSearch={openSearch} />
@@ -125,13 +126,14 @@ export default function App() {
         {route.module === "dictation" && <Dictation addXp={addXp} />}
         {route.module === "translation" && <Translation addXp={addXp} />}
         {route.module === "more" && (
-          <More xp={xp} theme={theme} onToggleTheme={toggleTheme} install={install} />
+          <More xp={xp} theme={theme} onToggleTheme={toggleTheme} />
         )}
       </main>
 
       <TabBar module={route.module} />
 
       <SearchPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <Toast notice={pwa.notice} />
     </div>
   );
 }

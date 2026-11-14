@@ -3,6 +3,7 @@ import { translation } from "../data/translation.js";
 import { Trophy, CheckCircle2, RotateCcw, Star } from "lucide-react";
 import { shuffle } from "../lib/text.js";
 import GameShell, { EndScreen } from "../components/GameShell.jsx";
+import { play } from "../lib/sound.js";
 
 const SESSION_SIZE = Math.min(15, translation.length);
 
@@ -29,10 +30,11 @@ function TranslationGame({ onClose, onFinish }){
   function reveal(){ setRevealed(true); }
   function grade(g){
     setGraded(g);
+    play(g === "ok" ? "correct" : "wrong");
     if(g === "ok") setXpGain(x=>x+8);
   }
   function next(){
-    if(pos+1 >= order.length){ setFinished(true); onFinish(xpGain); return; }
+    if(pos+1 >= order.length){ setFinished(true); play("win"); onFinish(xpGain); return; }
     setPos(p=>p+1); setRevealed(false); setGraded(null); setAttempt("");
   }
 

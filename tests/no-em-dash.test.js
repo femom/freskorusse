@@ -10,12 +10,14 @@ function walk(dir) {
 }
 const stripComments = (src) =>
   src
+    .replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, " "))
     .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
     .replace(/(^|[\s;,{(])\/\/[^\n]*/g, (m, p) => p + " ".repeat(m.length - p.length));
 const isCyrillic = (c) => /[А-Яа-яЁё]/.test(c || "");
 
 describe("pas de tiret cadratin dans les textes français", () => {
-  const files = walk("src").filter((f) => /\.(js|jsx)$/.test(f));
+  // Le code source, plus index.html (titre) et vite.config.js (description du manifest, visible à l'installation).
+  const files = [...walk("src").filter((f) => /\.(js|jsx)$/.test(f)), "index.html", "vite.config.js"];
   files.forEach((file) => {
     it(file, () => {
       const lines = stripComments(fs.readFileSync(file, "utf8")).split("\n");

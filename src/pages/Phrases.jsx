@@ -1,17 +1,29 @@
 import React, { useMemo, useEffect } from "react";
-import { Volume2, FileText, GraduationCap, Home as HomeIcon, ShoppingCart, Siren, CreditCard } from "lucide-react";
+import {
+  FileText, GraduationCap, Home as HomeIcon, ShoppingCart, Siren,
+  CreditCard, LifeBuoy, HandMetal, UserCircle, Coffee, MapPin,
+  ShoppingBag, MessageSquare, Puzzle,
+} from "lucide-react";
 import { phrases, phraseCategories } from "../data/phrases.js";
-import { speak } from "../lib/speech.js";
+import SpeakButton from "../components/SpeakButton.jsx";
 import { navigate, useRoute } from "../lib/router.jsx";
 
 // Icône par catégorie (les données restent de simples chaînes/objets dans data/phrases.js ;
 // le mapping vers un composant vectoriel se fait ici, côté affichage).
 const CATEGORY_ICONS = {
-  visa: FileText,
+  moules: Puzzle,
+  secours: LifeBuoy,
+  saluer: HandMetal,
+  identite: UserCircle,
   univ: GraduationCap,
+  restaurant: Coffee,
+  deplacement: MapPin,
+  courses: ShoppingBag,
+  reactions: MessageSquare,
+  visa: FileText,
+  urgence: Siren,
   logement: HomeIcon,
   quotidien: ShoppingCart,
-  urgence: Siren,
   argent: CreditCard,
 };
 
@@ -35,7 +47,7 @@ export default function Phrases(){
   return (
     <section>
       <h1 className="title">Phrases utiles</h1>
-      <p className="subtitle">Pour ton arrivée en Russie : visa, université, logement, vie de tous les jours. À consulter au besoin, comme un mini guide de voyage.</p>
+      <p className="subtitle">{phraseCategories.length} catégories, {phrases.length} phrases pour ton arrivée en Russie : secours, salutations, café, transports, courses, administration et bien plus.</p>
 
       {/* Changer de catégorie = filtrer : on remplace l'entrée d'historique (le bouton
           Retour ne doit pas rejouer chaque clic d'onglet) et on garde le scroll. */}
@@ -56,7 +68,8 @@ export default function Phrases(){
           <div className={"card phrase-item" + (String(p.id)===highlightId ? " is-highlighted" : "")} id={"phrase-"+p.id} key={p.id}>
             <div className="phrase-ru" lang="ru">{p.ru}</div>
             <div className="phrase-fr">{p.fr}</div>
-            <button type="button" className="play-btn phrase-play" onClick={()=> speak(p.ru)} aria-label={`Écouter : ${p.fr}`}><Volume2 size={16} aria-hidden="true"/></button>
+            {p.prononciation && <div className="phrase-prononciation">{p.prononciation}</div>}
+            <SpeakButton text={p.ru} className="play-btn phrase-play" ariaLabel={`Écouter : ${p.fr}`} />
           </div>
         ))}
       </div>
