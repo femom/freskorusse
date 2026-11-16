@@ -115,13 +115,15 @@ export function Feedback({ answered, correct, expected, hint = null }) {
 }
 
 // Écran de fin (victoire / défaite). `actions` : [{label, onClick, className}]
-export function EndScreen({ icon: Icon, title, message, xp, actions }) {
+export function EndScreen({ icon: Icon, title, message, detail = null, xp, tone = "win", actions }) {
   return (
     <div className="game-card">
       <div className="end-screen">
-        <div className="big-emoji"><Icon size={44} strokeWidth={1.8} aria-hidden="true" /></div>
+        {/* Autocollant façon comics : citron pour une réussite, rose sinon. */}
+        <div className={"big-emoji sticker " + tone}><Icon size={44} strokeWidth={2} aria-hidden="true" /></div>
         <h3>{title}</h3>
         <p>{message}</p>
+        {detail && <p className="end-detail">{detail}</p>}
         {xp != null && <div className="xp-earned">+{xp} XP</div>}
         <div className="game-actions">
           {actions.map((a) => (

@@ -5,7 +5,7 @@ import { normalize, shuffle } from "../lib/text.js";
 import { speak } from "../lib/speech.js";
 import GameShell, { Hearts, Feedback, EndScreen } from "../components/GameShell.jsx";
 import { play } from "../lib/sound.js";
-import { recordActivity, recordLesson } from "../lib/stats.js";
+import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
 
 // Déroulé complet d'une session de dictée : tirage aléatoire des phrases, gestion
 // des cœurs/XP, écoute + révélation du texte, saisie et vérification.
@@ -40,8 +40,8 @@ function DictationGame({ onClose, onFinish }){
     if(ok) setXpGain(x=>x+10); else setHearts(h=>h-1);
   }
   function advance(){
-    if(hearts <= 0){ setFinished("lose"); play("lose"); return; }
-    if(pos+1 >= order.length){ setFinished("win"); play("win"); recordLesson(); onFinish(xpGain); return; }
+    if(hearts <= 0){ setFinished("lose"); play("lose"); recordScore("dictation", xpGain/10, order.length); return; }
+    if(pos+1 >= order.length){ setFinished("win"); play("win"); recordLesson(); recordScore("dictation", xpGain/10, order.length); onFinish(xpGain); return; }
     setPos(p=>p+1);
   }
   function retry(){ setPos(0); setHearts(3); setXpGain(0); setAnswered(false); setCorrect(null); setRevealed(false); setTyped(""); setFinished(null); }
@@ -71,6 +71,7 @@ function DictationGame({ onClose, onFinish }){
           icon={HeartCrack}
           title="Plus de vies"
           message="Pas grave, recommence."
+          tone="lose"
           actions={[
             { label: "Réessayer", className: "ready", onClick: retry },
             { label: "Quitter", className: "ghost", onClick: onClose },

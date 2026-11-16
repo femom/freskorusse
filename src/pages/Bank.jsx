@@ -130,6 +130,7 @@ export default function Bank({ addXp }){
         <LessonEngine
           questions={globalQuestions}
           title="Banque de mots"
+          lessonId="bank"
           accent="var(--accent-bank)"
           onClose={()=> setLessonOpen(false)}
           onFinish={(xp)=> addXp(xp)}

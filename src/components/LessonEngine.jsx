@@ -3,7 +3,7 @@ import { Trophy, HeartCrack } from "lucide-react";
 import { normalize, shuffle } from "../lib/text.js";
 import GameShell, { Hearts, Feedback, EndScreen } from "./GameShell.jsx";
 import { play } from "../lib/sound.js";
-import { recordActivity, recordLesson } from "../lib/stats.js";
+import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
 import SpeakButton from "./SpeakButton.jsx";
 
 // Moteur de leçon générique réutilisé par les cas, les verbes ET la banque de
@@ -11,11 +11,13 @@ import SpeakButton from "./SpeakButton.jsx";
 // (type="mcq").
 // `questions` : tableau de {type, prompt, base, options?, answer:[...]}
 // `onFinish(xpGagné)` est appelé une seule fois, quand la leçon est réussie.
-export default function LessonEngine({ questions, onClose, onFinish, title, accent }){
+// `lessonId` : clé du meilleur score (ex. "case:acc", "recognition"). Sans lui, aucun score n'est enregistré.
+export default function LessonEngine({ questions, onClose, onFinish, title, accent, lessonId }){
   const [order] = useState(()=> shuffle(questions.map((_,i)=>i)));
   const [pos, setPos] = useState(0);
   const [hearts, setHearts] = useState(3);
   const [xpGain, setXpGain] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [selected, setSelected] = useState(null);
   const [correct, setCorrect] = useState(null);
@@ -35,17 +37,17 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
     setAnswered(true); setCorrect(ok); setSelected(given);
     play(ok ? "correct" : "wrong");
     recordActivity();
-    if(ok) setXpGain(x=>x+10); else setHearts(h=>h-1);
+    if(ok){ setXpGain(x=>x+10); setCorrectCount(c=>c+1); } else setHearts(h=>h-1);
   }
 
   function advance(){
-    if(hearts <= 0){ setFinished("lose"); play("lose"); return; }
-    if(pos+1 >= order.length){ setFinished("win"); play("win"); recordLesson(); onFinish(xpGain); return; }
+    if(hearts <= 0){ setFinished("lose"); play("lose"); recordScore(lessonId, correctCount, order.length); return; }
+    if(pos+1 >= order.length){ setFinished("win"); play("win"); recordLesson(); recordScore(lessonId, correctCount, order.length); onFinish(xpGain); return; }
     setPos(p=>p+1);
   }
 
   function retry(){
-    setPos(0); setHearts(3); setXpGain(0); setAnswered(false); setSelected(null); setCorrect(null); setFinished(null);
+    setPos(0); setHearts(3); setXpGain(0); setCorrectCount(0); setAnswered(false); setSelected(null); setCorrect(null); setFinished(null);
   }
 
   const progressPct = finished ? 100 : Math.round((pos/order.length)*100);
@@ -64,6 +66,7 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
           icon={Trophy}
           title="Leçon terminée !"
           message="Tu as répondu à toutes les questions."
+          detail={`${correctCount} bonne${correctCount > 1 ? "s" : ""} réponse${correctCount > 1 ? "s" : ""} sur ${order.length}`}
           xp={xpGain}
           actions={[{ label: "Continuer", className: "continue", onClick: onClose }]}
         />
@@ -74,6 +77,8 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
           icon={HeartCrack}
           title="Plus de vies"
           message="Pas grave, recommence : tu vas y arriver."
+          tone="lose"
+          detail={`${correctCount} bonne${correctCount > 1 ? "s" : ""} réponse${correctCount > 1 ? "s" : ""} sur ${order.length}`}
           actions={[
             { label: "Réessayer", className: "ready", onClick: retry },
             { label: "Quitter", className: "ghost", onClick: onClose },

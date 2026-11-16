@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from "react";
-import { FileText, GraduationCap, Home as HomeIcon, ShoppingCart, Siren, CreditCard } from "lucide-react";
+import { FileText, GraduationCap, Home as HomeIcon, ShoppingCart, Siren, CreditCard, LifeBuoy, MessageCircle, UserRound, Coffee, MapPinned, ShoppingBasket, MessagesSquare, Files, HeartPulse } from "lucide-react";
 import { phrases, phraseCategories } from "../data/phrases.js";
 import SpeakButton from "../components/SpeakButton.jsx";
 import { navigate, useRoute } from "../lib/router.jsx";
@@ -13,6 +13,16 @@ const CATEGORY_ICONS = {
   quotidien: ShoppingCart,
   urgence: Siren,
   argent: CreditCard,
+  secours: LifeBuoy,
+  saluer: MessageCircle,
+  presentation: UserRound,
+  classe: GraduationCap,
+  restaurant: Coffee,
+  transport: MapPinned,
+  courses: ShoppingBasket,
+  reactions: MessagesSquare,
+  administration: Files,
+  sante: HeartPulse,
 };
 
 // La catégorie active vient de l'URL (#/phrases/logement) : on peut partager ou
@@ -35,7 +45,7 @@ export default function Phrases(){
   return (
     <section>
       <h1 className="title">Phrases utiles</h1>
-      <p className="subtitle">Pour ton arrivée en Russie : visa, université, logement, vie de tous les jours. À consulter au besoin, comme un mini guide de voyage.</p>
+      <p className="subtitle">Des phrases classées par situation, avec leur prononciation et une écoute audio pour t’aider à les utiliser.</p>
 
       {/* Changer de catégorie = filtrer : on remplace l'entrée d'historique (le bouton
           Retour ne doit pas rejouer chaque clic d'onglet) et on garde le scroll. */}
@@ -56,6 +66,7 @@ export default function Phrases(){
           <div className={"card phrase-item" + (String(p.id)===highlightId ? " is-highlighted" : "")} id={"phrase-"+p.id} key={p.id}>
             <div className="phrase-ru" lang="ru">{p.ru}</div>
             <div className="phrase-fr">{p.fr}</div>
+            {p.pronunciation && <div className="phrase-pronunciation">Prononciation : <span lang="fr">{p.pronunciation}</span></div>}
             <SpeakButton text={p.ru} className="play-btn phrase-play" ariaLabel={`Écouter : ${p.fr}`} />
           </div>
         ))}

@@ -60,8 +60,11 @@ Aucune dépendance de routage ni d'UI : toute nouvelle dépendance doit être ju
 14. **Contenu des cas** : le contenu d'origine (`cases.js`) ne se modifie pas ; les ajouts vont dans
     `caseExtras.js` et sont vérifiés par `tests/case-extras.test.js`. Une phrase de reconnaissance doit avoir un
     cas déterminé sans ambiguïté par le contexte, avec un indice. Voir `docs/cases-content.md`.
-15. **Audio** : tout bouton « écouter » passe par `SpeakButton` (il explique quand le son est impossible).
-16. **Commits** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`).
+15. **Statistiques et progression** : tout passe par `src/lib/stats.js` (jours, série, leçons, mots, meilleurs scores)
+    et `src/lib/progress.js` (maîtrise, barre de l'accueil). Données locales seulement. Une nouvelle leçon passe un
+    `lessonId` à `LessonEngine` pour enregistrer son meilleur score ; on compare des ratios, jamais des chiffres bruts.
+16. **Audio** : tout bouton « écouter » passe par `SpeakButton` (il explique quand le son est impossible).
+17. **Commits** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`).
 
 ## Avant de rendre un travail
 `npm test` vert, `npm run build` OK, parcours manuel sur mobile (barre d'onglets, retour arrière) et sur desktop.

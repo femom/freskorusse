@@ -58,7 +58,22 @@ visité) avec les cubes de lettres, « Pour toi » (4 recommandations), carte «
 jour » (ouvre l'exercice de reconnaissance), puis tous les modules. Statistiques : `src/lib/stats.js`, stockées
 sur l'appareil seulement.
 
-## À faire ensuite (phases suivantes)
-1. Habiller les autres écrans (leçons, tableaux, outil « un mot ») avec les mêmes surfaces en verre et les cubes de lettres.
-2. Barre de progression sur « Reprendre » : demande d'enregistrer la progression par leçon (non suivie aujourd'hui).
-3. Illustrations de fin de série (autocollants, « Correct ! » façon bulle) : touches comics supplémentaires.
+## Écrans habillés (phase 2, faite)
+- **Navigation** : logo citron, barre d'onglets flottante en verre sur mobile.
+- **Jeux** : fond de verre avec deux taches de couleur douces, réponses en pastilles, piste de progression repérable (bordure 3:1).
+- **Touches comics** : la réponse s'affiche dans une **bulle** (menthe si juste, rose sinon) avec sa petite queue ;
+  la fin de série est un **autocollant** incliné (citron si réussi, rose sinon) avec le score ; l'XP gagné en pastille beurre.
+- **Listes et onglets** : l'état actif est pastel (citron pour les filtres, lilas pour les vues d'un module) avec texte sombre (7:1).
+- **Banque de mots** : le verso des cartes prend beurre, lilas, menthe, rose à tour de rôle.
+
+## Progression (phase 2, faite)
+Meilleur score par leçon, enregistré sur l'appareil (`recordScore` dans `src/lib/stats.js`) : `case:<cas>`, `recognition`,
+`verbs`, `bank`, `dictation`, `translation`. Un cas est **maîtrisé** à partir de 80 % de bonnes réponses.
+Affichages : pastille « Maîtrisé · 9/10 » sur chaque carte de cas, rappel du meilleur score sur les lancements,
+barre sur « Reprendre » (cas maîtrisés sur 6, ou meilleur score du module). On compare des ratios, pas des chiffres bruts,
+car les séries n'ont pas toutes le même nombre de questions.
+
+## À faire ensuite (optionnel)
+1. Un récapitulatif de progression complet (page dédiée) : historique, cas à revoir.
+2. Rappels doux (notification) pour la série de jours : demande une autorisation et un choix de l'utilisateur.
+3. Illustrations supplémentaires (cubes de lettres sur les modules, mascotte) si la direction te plaît.

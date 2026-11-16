@@ -21,6 +21,19 @@ export function dayKey(date = new Date()) {
   return `${date.getFullYear()}-${m}-${d}`;
 }
 
+// Meilleurs scores par leçon : { "case:acc": { best: 8, total: 10, plays: 3 } }. Entrées invalides ignorées.
+function cleanScores(raw) {
+  const out = {};
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    Object.entries(raw).forEach(([id, s]) => {
+      if (s && Number.isFinite(s.best) && Number.isFinite(s.total) && s.total > 0 && s.best >= 0 && s.best <= s.total) {
+        out[id] = { best: s.best, total: s.total, plays: Number.isFinite(s.plays) ? s.plays : 1 };
+      }
+    });
+  }
+  return out;
+}
+
 function load() {
   try {
     const parsed = JSON.parse(readStorage(KEY, "") || "{}");
@@ -28,9 +41,10 @@ function load() {
       days: Array.isArray(parsed.days) ? parsed.days.filter((d) => typeof d === "string") : [],
       lessons: Number.isFinite(parsed.lessons) ? parsed.lessons : 0,
       words: Array.isArray(parsed.words) ? parsed.words : [],
+      scores: cleanScores(parsed.scores),
     };
   } catch (e) {
-    return { days: [], lessons: 0, words: [] };
+    return { days: [], lessons: 0, words: [], scores: {} };
   }
 }
 
@@ -62,6 +76,15 @@ export function recordWordSeen(id, now = new Date()) {
   const days = state.days.includes(today) ? state.days : [...state.days, today].sort().slice(-MAX_DAYS);
   const words = state.words.includes(id) ? state.words : [...state.words, id];
   if (words !== state.words || days !== state.days) commit({ ...state, words, days });
+}
+
+// Enregistre le résultat d'une série (bonnes réponses sur total) : on garde le MEILLEUR score.
+export function recordScore(id, correct, total) {
+  if (!id || !(total > 0) || !(correct >= 0) || correct > total) return;
+  const prev = state.scores[id];
+  const better = !prev || correct / total > prev.best / prev.total;
+  const next = { best: better ? correct : prev.best, total: better ? total : prev.total, plays: (prev ? prev.plays : 0) + 1 };
+  commit({ ...state, scores: { ...state.scores, [id]: next } });
 }
 
 // Nombre de jours validés d'affilée (voir les règles en tête de fichier).
@@ -108,6 +131,6 @@ export function __reloadStatsForTests() {
 
 // Réinitialise (tests uniquement).
 export function __resetStatsForTests() {
-  state = { days: [], lessons: 0, words: [] };
+  state = { days: [], lessons: 0, words: [], scores: {} };
   listeners.forEach((l) => l());
 }

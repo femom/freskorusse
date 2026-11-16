@@ -4,6 +4,7 @@ import { Link, parseHash } from "../lib/router.jsx";
 import { readStorage, LAST_ROUTE_KEY } from "../lib/hooks.js";
 import { MODULES, MODULE_BY_KEY, describeRoute } from "../navigation.js";
 import { useStats, computeStreak, weekDays, dayKey } from "../lib/stats.js";
+import { heroProgress } from "../lib/progress.js";
 
 // Les modules présentés en cartes : même liste que la navigation (navigation.js).
 const CARDS = MODULES.filter((m) => m.key !== "home");
@@ -56,6 +57,8 @@ export default function Home({ xp = 0 }) {
     return info.resume ? { route, label: info.resume } : null;
   }, []);
 
+  const progress = heroProgress(resume ? resume.route.module : "cases", stats.scores);
+
   const subtitle = stats.days.length === 0
     ? "Bienvenue ! Choisis un module pour commencer."
     : todayDone
@@ -84,6 +87,21 @@ export default function Home({ xp = 0 }) {
                 <span className="pick-tag">{resume ? "Dernière visite" : "Pour débuter"}</span>
                 <h3>{resume ? resume.label : "Les cas russes"}</h3>
                 <p>{resume ? "Retrouve l'endroit où tu t'étais arrêté." : "Les 6 cas, un par un, avec des exercices."}</p>
+                {progress && (
+                  <div className="hero-progress">
+                    <div
+                      className="bar"
+                      role="progressbar"
+                      aria-label={progress.label}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={Math.round(progress.ratio * 100)}
+                    >
+                      <i style={{ width: `${Math.round(progress.ratio * 100)}%` }} />
+                    </div>
+                    <span>{progress.label}</span>
+                  </div>
+                )}
                 <Link
                   to={resume ? resume.route.module : "cases"}
                   sub={resume ? resume.route.sub : undefined}

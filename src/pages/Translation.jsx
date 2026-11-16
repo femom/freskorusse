@@ -4,7 +4,7 @@ import { Trophy, CheckCircle2, RotateCcw, Star } from "lucide-react";
 import { shuffle } from "../lib/text.js";
 import GameShell, { EndScreen } from "../components/GameShell.jsx";
 import { play } from "../lib/sound.js";
-import { recordActivity, recordLesson } from "../lib/stats.js";
+import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
 
 const SESSION_SIZE = Math.min(15, translation.length);
 
@@ -36,7 +36,7 @@ function TranslationGame({ onClose, onFinish }){
     if(g === "ok") setXpGain(x=>x+8);
   }
   function next(){
-    if(pos+1 >= order.length){ setFinished(true); play("win"); recordLesson(); onFinish(xpGain); return; }
+    if(pos+1 >= order.length){ setFinished(true); play("win"); recordLesson(); recordScore("translation", xpGain/8, order.length); onFinish(xpGain); return; }
     setPos(p=>p+1); setRevealed(false); setGraded(null); setAttempt("");
   }
 

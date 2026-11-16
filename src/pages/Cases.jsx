@@ -14,6 +14,8 @@ import SpeakButton from "../components/SpeakButton.jsx";
 import { Link, useRoute } from "../lib/router.jsx";
 import { badgeColors } from "../lib/color.js";
 import { shuffle } from "../lib/text.js";
+import { useStats } from "../lib/stats.js";
+import { ratioOf, isMastered, bestLabel } from "../lib/progress.js";
 import { buildRecognitionQuestions } from "../lib/recognition.js";
 
 const RECOGNITION_SESSION = 12;
@@ -46,11 +48,13 @@ function ChipList({ items, label }) {
 
 // Carte d'un cas sur la vue d'ensemble (calquée sur l'affiche de référence) :
 // un bandeau coloré, le rôle en une phrase, les questions, un exemple.
-function CaseCard({ c, index }) {
+function CaseCard({ c, index, scores }) {
   const info = caseInfo[c.key];
   const col = caseColors[c.key].c;
   const first = c.examples[0];
   const prepositions = info.oftenWith.prepositions;
+  const score = scores[`case:${c.key}`];
+  const mastered = isMastered(scores, `case:${c.key}`);
   return (
     <Link to="cases" sub={c.key} className="case-card case-scope" style={{ "--case-c": col }}>
       <span className="case-card-head" style={badgeColors(col)}>
@@ -59,6 +63,11 @@ function CaseCard({ c, index }) {
           <strong>{c.label}</strong>
           <small lang="ru">{c.ru}</small>
         </span>
+        {score && (
+          <span className={"score-chip" + (mastered ? " ok" : "")} aria-label={`${mastered ? "Maîtrisé, " : ""}meilleur score ${score.best} sur ${score.total}`}>
+            {mastered ? "Maîtrisé · " : ""}{score.best}/{score.total}
+          </span>
+        )}
       </span>
       <span className="case-card-body">
         <span className="case-role">{info.role}</span>
@@ -87,6 +96,7 @@ function CaseCard({ c, index }) {
 //   #/cas/acc   : détail d'un cas (rôle, terminaisons, cas particuliers, exemples, leçon)
 export default function Cases({ selected, addXp }) {
   const [lessonOpen, setLessonOpen] = useState(false);
+  const scores = useStats().scores;
   const [recognitionOpen, setRecognitionOpen] = useState(false);
   // Arrivée depuis le « défi du jour » de l'accueil : #/cas?defi=1 ouvre directement l'exercice.
   const route = useRoute();
@@ -113,14 +123,14 @@ export default function Cases({ selected, addXp }) {
         <CasesTabs current="list" />
 
         <div className="case-grid">
-          {cases.map((c, i) => <CaseCard key={c.key} c={c} index={i} />)}
+          {cases.map((c, i) => <CaseCard key={c.key} c={c} index={i} scores={scores} />)}
         </div>
 
         <h2 className="block-title">Entraînement : reconnaître le cas</h2>
         <div className="lesson-launch" style={{ "--lesson-accent": "var(--accent-cases)" }}>
           <div className="info">
             <h3>{RECOGNITION_SESSION} phrases au hasard sur {recognitionItems.length}</h3>
-            <p>Un mot est souligné dans une vraie phrase : dis dans quel cas il est. Chaque réponse est expliquée. 3 vies.</p>
+            <p>Un mot est souligné dans une vraie phrase : dis dans quel cas il est. Chaque réponse est expliquée. 3 vies.{bestLabel(scores, "recognition") ? ` ${bestLabel(scores, "recognition")}.` : ""}</p>
           </div>
           <button type="button" className="btn-start" onClick={() => setRecognitionOpen(true)}>Démarrer ▶</button>
         </div>
@@ -170,6 +180,7 @@ export default function Cases({ selected, addXp }) {
           <LessonEngine
             questions={recognitionQuestions}
             title="Reconnaître le cas"
+            lessonId="recognition"
             accent="var(--accent-cases)"
             onClose={() => setRecognitionOpen(false)}
             onFinish={(xp) => addXp(xp)}
@@ -253,7 +264,7 @@ export default function Cases({ selected, addXp }) {
       <div className="lesson-launch" style={{ "--lesson-accent": "var(--accent-cases)" }}>
         <div className="info">
           <h3>{active.exos.length} exercices : {active.label}</h3>
-          <p>Réponses à trous et choix multiples, sur les 4 genres. Attention : 3 vies.</p>
+          <p>Réponses à trous et choix multiples, sur les 4 genres. Attention : 3 vies.{bestLabel(scores, `case:${active.key}`) ? ` ${bestLabel(scores, `case:${active.key}`)}.` : ""}</p>
         </div>
         <button type="button" className="btn-start" onClick={() => setLessonOpen(true)}>Démarrer la leçon ▶</button>
       </div>
@@ -265,6 +276,7 @@ export default function Cases({ selected, addXp }) {
         <LessonEngine
           questions={active.exos}
           title={active.label}
+          lessonId={`case:${active.key}`}
           accent="var(--accent-cases)"
           onClose={() => setLessonOpen(false)}
           onFinish={(xp) => addXp(xp)}

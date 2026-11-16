@@ -149,6 +149,7 @@ export default function Verbs({ selected, addXp }){
           <LessonEngine
             questions={globalQuestions}
             title="Conjugaison"
+            lessonId="verbs"
             accent="var(--accent-verbs)"
             onClose={()=> setLessonOpen(false)}
             onFinish={(xp)=> addXp(xp)}
