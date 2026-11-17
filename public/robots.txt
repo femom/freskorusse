@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://freskorussedist.vercel.app/sitemap.xml

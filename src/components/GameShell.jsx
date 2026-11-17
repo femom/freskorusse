@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { X, Heart, CheckCircle2, XCircle } from "lucide-react";
 import { setBusy } from "../lib/pwa.js";
 import { play } from "../lib/sound.js";
+import freskoContent from "../assets/fresko-content.png";
+import freskoTriste from "../assets/fresko-triste.png";
 
 // Coque commune des trois jeux (leçons, dictée, traduction) : plein écran,
 // barre de progression, bouton quitter.
@@ -115,12 +117,27 @@ export function Feedback({ answered, correct, expected, hint = null }) {
 }
 
 // Écran de fin (victoire / défaite). `actions` : [{label, onClick, className}]
-export function EndScreen({ icon: Icon, title, message, detail = null, xp, tone = "win", actions }) {
+// La mascotte Fresko réagit au résultat : content (avec sa couronne) ou triste.
+// Notion : composant ouvert aux variations — `mascot={false}` retombe sur l'icône,
+// sans toucher aux écrans qui l'appellent. L'animation est coupée par la règle
+// globale « réduire les animations » (prefers-reduced-motion).
+export function EndScreen({ icon: Icon, title, message, detail = null, xp, tone = "win", mascot = true, actions }) {
+  const lose = tone === "lose";
   return (
     <div className="game-card">
       <div className="end-screen">
-        {/* Autocollant façon comics : citron pour une réussite, rose sinon. */}
-        <div className={"big-emoji sticker " + tone}><Icon size={44} strokeWidth={2} aria-hidden="true" /></div>
+        {mascot ? (
+          <img
+            className={"end-mascot " + (lose ? "lose" : "win")}
+            src={lose ? freskoTriste : freskoContent}
+            alt={lose ? "Fresko, triste" : "Fresko, content"}
+            width="150"
+            height="150"
+          />
+        ) : (
+          /* Autocollant façon comics : citron pour une réussite, rose sinon. */
+          <div className={"big-emoji sticker " + tone}><Icon size={44} strokeWidth={2} aria-hidden="true" /></div>
+        )}
         <h3>{title}</h3>
         <p>{message}</p>
         {detail && <p className="end-detail">{detail}</p>}

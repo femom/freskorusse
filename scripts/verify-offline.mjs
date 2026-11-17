@@ -26,7 +26,7 @@ const precached = new Set([...sw.matchAll(/\{url:"([^"]+)"/g)].map((m) => m[1]))
 
 // 1. Tous les fichiers de l'app sont précachés (sauf le service worker lui-même et ses dépendances).
 // Les .woff (ancien format) ne sont que des solutions de repli : les navigateurs récents lisent le .woff2, seul précaché.
-const files = walk(DIST).map(rel).filter((f) => f !== "sw.js" && !/^workbox-.*\.js$/.test(f) && !f.endsWith(".map") && !f.endsWith(".woff"));
+const files = walk(DIST).map(rel).filter((f) => f !== "sw.js" && !/^workbox-.*\.js$/.test(f) && !f.endsWith(".map") && !f.endsWith(".woff") && f !== "robots.txt" && f !== "sitemap.xml");
 const missing = files.filter((f) => !precached.has(f));
 check(missing.length === 0, `Les ${files.length} fichiers de l'app sont dans le cache hors-ligne`, missing.join(", "));
 
@@ -49,7 +49,8 @@ check(/SKIP_WAITING/.test(sw), "La nouvelle version attend l'ordre de l'applicat
 
 // 5. Aucune ressource chargée depuis Internet par la page ou la feuille de style.
 const css = walk(DIST).filter((f) => f.endsWith(".css")).map((f) => fs.readFileSync(f, "utf8")).join("\n");
-const external = [...(html + css).matchAll(/(?:src|href)="(https?:\/\/[^"]+)"|url\((https?:\/\/[^)]+)\)|@import\s+["']?(https?:\/\/[^"')]+)/g)];
+const htmlSansSeo = html.replace(/<link rel="canonical"[^>]*>/g, ""); // adresse déclarée pour les moteurs, rien n'est chargé
+const external = [...(htmlSansSeo + css).matchAll(/(?:src|href)="(https?:\/\/[^"]+)"|url\((https?:\/\/[^)]+)\)|@import\s+["']?(https?:\/\/[^"')]+)/g)];
 check(external.length === 0, "Aucune police, image ou script chargé depuis Internet", external.map((m) => m[1] || m[2] || m[3]).join(", "));
 
 // 6. Aucune requête réseau dans le code de l'application.

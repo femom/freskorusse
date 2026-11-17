@@ -546,7 +546,26 @@ kbd {
    justify-content: center;
 }
 
+/* Pied de barre réduite : une seule colonne centrée, chaque bouton sur le même axe que les icônes de navigation. */
+.app.sidebar-collapsed .side-footer {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 10px;
+}
+.app.sidebar-collapsed .side-footer .theme-toggle,
+.app.sidebar-collapsed .side-footer .icon-toggle,
+.app.sidebar-collapsed .side-footer .install-btn,
+.app.sidebar-collapsed .side-footer .installed-pill {
+   width: 44px;
+   min-width: 44px;
+   margin: 0;
+   padding: 0;
+   justify-content: center;
+}
+
 .install-btn {
+   width: calc(100% - 12px);
    margin: 0 6px 10px 6px;
    padding: 9px 12px;
    min-height: 44px;
@@ -570,18 +589,19 @@ kbd {
 
 main {
    padding: 34px 42px 80px 42px;
-   max-width: 900px;
+   width: 100%;
+   max-width: 940px;
+   margin-inline: auto;
 }
+/* Largeur selon la page : texte de lecture étroit, détail d'un verbe moyen, accueil et listes larges.
+   Toujours centré : plus de grand vide d'un seul côté, quelle que soit la largeur de l'écran. */
+main:has(.page-mid) { max-width: 1040px; }
+main:has(.page-wide) { max-width: 1240px; }
 main:focus,
 h1[tabindex="-1"]:focus {
    outline: none;
 }
 
-/* En mode sidebar réduit, la colonne de contenu devient beaucoup plus large que
-   son contenu (max-width 900px) : on la centre pour une page équilibrée. */
-.app.sidebar-collapsed main {
-   margin: 0 auto;
-}
 
 h1.title {
    font-size: 1.7rem;
@@ -936,8 +956,8 @@ a.card {
 
 .module-cards {
    display: grid;
-   grid-template-columns: repeat(2, 1fr);
-   gap: 14px;
+   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+   gap: 16px;
    margin-bottom: 10px;
 }
 
@@ -1029,8 +1049,8 @@ a.card {
 
 .verb-cards {
    display: grid;
-   grid-template-columns: repeat(3, 1fr);
-   gap: 12px;
+   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+   gap: 16px;
    margin-bottom: 10px;
 }
 
@@ -1186,6 +1206,12 @@ a.card {
    max-width: 360px;
 }
 
+.conj-note {
+   align-self: start;
+   margin: 0;
+   padding: 14px 4px;
+}
+
 .conj-col-empty {
    display: flex;
    flex-direction: column;
@@ -1202,8 +1228,10 @@ a.card {
 }
 
 .conj-row {
-   display: flex;
-   justify-content: space-between;
+   display: grid;
+   grid-template-columns: 7.5rem minmax(0, 1fr);
+   align-items: center;
+   column-gap: 12px;
    padding: 6px 0;
    border-bottom: 1px solid var(--line);
    font-size: 0.93rem;
@@ -1222,8 +1250,9 @@ a.card {
    font-weight: 700;
 }
 .form-sound{
-   display:inline-flex;
+   display:flex;
    align-items:center;
+   justify-content:space-between;
    gap:8px;
 }
 .conj-audio-control{
@@ -1641,6 +1670,25 @@ dialog.game-overlay:not([open]) {
    margin-bottom: 10px;
 }
 
+/* Mascotte de l'écran de fin : rebond joyeux à la victoire, chute douce à la défaite. */
+.end-mascot {
+   display: block;
+   width: 150px;
+   height: 150px;
+   margin: 0 auto 12px;
+   object-fit: contain;
+}
+.end-mascot.win { animation: fresko-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.end-mascot.lose { border-radius: 28px; animation: fresko-drop 0.5s ease-out both; }
+@keyframes fresko-pop {
+   from { opacity: 0; transform: scale(0.55) rotate(-6deg); }
+   to { opacity: 1; transform: scale(1) rotate(0); }
+}
+@keyframes fresko-drop {
+   from { opacity: 0; transform: translateY(-14px); }
+   to { opacity: 1; transform: translateY(0); }
+}
+
 .end-screen h3 {
    font-size: 1.4rem;
    font-weight: 700;
@@ -1885,12 +1933,10 @@ dialog.game-overlay:not([open]) {
       display: none;
    }
 
-   .module-cards {
-      grid-template-columns: 1fr;
-   }
-
+   /* Tablette : autant de colonnes que la largeur le permet ; téléphone : 2 colonnes. */
    .verb-cards {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
    }
 
    .example-grid {
@@ -3029,25 +3075,46 @@ nav.side {
 }
 .home-grid {
    display: grid;
-   grid-template-columns: minmax(0, 1fr) 320px;
+   grid-template-columns: minmax(0, 1fr) 340px;
+   grid-template-areas:
+      "stats stats"
+      "resume side"
+      "picks picks";
    gap: 24px;
-   align-items: start;
+   align-items: stretch;
    margin-bottom: 8px;
 }
-.home-main,
+/* « home-main » n'est qu'un regroupement : ses blocs se placent directement dans la grille. */
+.home-main {
+   display: contents;
+}
+.home-main > .stat-row { grid-area: stats; }
+.home-resume { grid-area: resume; }
+.home-picks { grid-area: picks; }
+.home-side { grid-area: side; }
+.home-resume,
 .home-side {
    display: flex;
    flex-direction: column;
-   gap: 22px;
    min-width: 0;
 }
-.home-side h2,
+.home-resume .home-hero { flex: 1; }
+.side-stack {
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+}
+.side-stack > * { flex: 1 1 auto; }
+.home-grid .block-title { margin-top: 0; }
+.home > .block-title { margin-top: 34px; }
+.side-stack h2,
 .home-hero h3,
 .pick h3 {
    margin: 0;
    font-weight: 800;
 }
-.home-side h2 {
+.side-stack h2 {
    display: flex;
    align-items: center;
    gap: 8px;
@@ -3166,7 +3233,7 @@ nav.side {
 
 .pick-grid {
    display: grid;
-   grid-template-columns: repeat(2, minmax(0, 1fr));
+   grid-template-columns: repeat(4, minmax(0, 1fr));
    gap: 16px;
 }
 .pick {
@@ -3276,9 +3343,13 @@ nav.side {
 .challenge-card h2 { color: var(--on-pastel); }
 
 @media (max-width: 1100px) {
-   .home-grid { grid-template-columns: minmax(0, 1fr); }
-   .home-side { flex-direction: row; flex-wrap: wrap; }
-   .home-side > * { flex: 1 1 280px; }
+   .home-grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "stats" "resume" "side" "picks";
+   }
+   .side-stack { flex-direction: row; flex-wrap: wrap; }
+   .side-stack > * { flex: 1 1 280px; }
+   .pick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
    .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -3304,10 +3375,19 @@ h1.title {
 /* Navigation : logo citron, pastille active en verre, barre d'onglets flottante */
 .brand .logo,
 .topbar-logo {
-   background: var(--lime);
-   color: var(--on-pastel);
-   font-weight: 800;
+   background: none;
+   overflow: hidden;
+   padding: 0;
    box-shadow: var(--glass-hi), 0 6px 14px rgba(0, 0, 0, 0.14);
+}
+/* Logo : la mascotte Fresko remplit le badge (même taille et même arrondi que l'ancien « РУ »). */
+.brand .logo img,
+.topbar-logo img {
+   display: block;
+   width: 100%;
+   height: 100%;
+   border-radius: inherit;
+   object-fit: cover;
 }
 .module-btn.active {
    box-shadow: inset 0 0 0 1px var(--glass-line);

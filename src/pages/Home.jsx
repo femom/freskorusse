@@ -66,7 +66,7 @@ export default function Home({ xp = 0 }) {
       : "Fais un exercice aujourd'hui pour valider ta journée.";
 
   return (
-    <section className="home">
+    <section className="home page-wide">
       <h1 className="title">Привет !</h1>
       <p className="subtitle">{subtitle}</p>
 
@@ -79,7 +79,7 @@ export default function Home({ xp = 0 }) {
             <StatChip tone="pink" icon="Я" value={stats.words.length} label={stats.words.length > 1 ? "Mots vus" : "Mot vu"} />
           </div>
 
-          <section aria-labelledby="home-resume">
+          <section className="home-resume" aria-labelledby="home-resume">
             <h2 className="block-title" id="home-resume">{resume ? "Reprendre" : "Commencer"}</h2>
             <div className="card glass home-hero">
               <LetterBlocks />
@@ -113,7 +113,7 @@ export default function Home({ xp = 0 }) {
             </div>
           </section>
 
-          <section aria-labelledby="home-picks">
+          <section className="home-picks" aria-labelledby="home-picks">
             <h2 className="block-title" id="home-picks">Pour toi</h2>
             <div className="pick-grid">
               {PICKS.map((p) => (
@@ -129,6 +129,8 @@ export default function Home({ xp = 0 }) {
         </div>
 
         <aside className="home-side" aria-label="Série et défi">
+          <h2 className="block-title">Aujourd'hui</h2>
+          <div className="side-stack">
           <section className="card glass streak-card" aria-labelledby="home-streak">
             <h2 id="home-streak">{streak > 0 ? `Série de ${streak} ${streak > 1 ? "jours" : "jour"}` : "Pas encore de série"}</h2>
             <ul className="week" aria-label="Jours validés cette semaine">
@@ -146,6 +148,7 @@ export default function Home({ xp = 0 }) {
             <p>Reconnaître le cas : 12 phrases, 3 vies.</p>
             <Link to="cases" query={{ defi: "1" }} className="btn-home on-pastel">Relever le défi <ArrowRight size={18} aria-hidden="true" /></Link>
           </section>
+          </div>
         </aside>
       </div>
 

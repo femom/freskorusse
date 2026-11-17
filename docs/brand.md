@@ -77,3 +77,10 @@ car les séries n'ont pas toutes le même nombre de questions.
 1. Un récapitulatif de progression complet (page dédiée) : historique, cas à revoir.
 2. Rappels doux (notification) pour la série de jours : demande une autorisation et un choix de l'utilisateur.
 3. Illustrations supplémentaires (cubes de lettres sur les modules, mascotte) si la direction te plaît.
+
+## Mascotte : Fresko
+- Serpent vert citron avec des lunettes noires carrées de style voxel, créé par Ferol.
+- Source : `design/fresko-planche-v1.png` (planche 1536x1024, fond quasi noir). Les icônes de `public/` en sont tirées par recadrage.
+- Icônes : `icon-512.png`, `icon-192.png`, `icon-mask-512.png` (Android « maskable », art à 66 % pour rester dans la zone de sécurité), `apple-touch-icon.png` (180, plein cadre), `favicon-32.png` (tête seule).
+- À faire : remplacer par les fichiers d'origine de la mascotte (1024 px minimum) pour une netteté maximale.
+- Rappel : les icônes déjà installées se mettent à jour lentement (Android) ou demandent une réinstallation (iOS).

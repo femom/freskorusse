@@ -8,12 +8,62 @@
   <meta name="color-scheme" content="dark light">
   <!-- Applique le thème enregistré AVANT le premier affichage : pas d'éclair de la mauvaise couleur -->
   <script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("freskorusse_theme")||"dark")}catch(e){}</script>
-  <title>FreskoRusse : cas, verbes, dictée, traduction</title>
-  <link rel="icon" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+  <title>FreskoRusse : apprendre le russe (cas, verbes, dictée)</title>
+  <meta name="description" content="FreskoRusse est une application gratuite pour apprendre le russe en français : les 6 cas, la conjugaison des verbes, la banque de mots, la dictée, la traduction et la bibliothèque de textes. Fonctionne sans connexion.">
+  <meta name="google-site-verification" content="R8oO9TDAL35B49eKgWX9AZ0mXxwJnijN4GyehtPjATs">
+  <meta name="application-name" content="FreskoRusse">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://freskorussedist.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FreskoRusse">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="FreskoRusse : apprendre le russe (cas, verbes, dictée)">
+  <meta property="og:description" content="Application gratuite pour apprendre le russe en français : cas, conjugaison, banque de mots, dictée, traduction. Installable, même sans connexion.">
+  <meta property="og:url" content="https://freskorussedist.vercel.app/">
+  <meta property="og:image" content="https://freskorussedist.vercel.app/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="FreskoRusse : apprendre le russe (cas, verbes, dictée)">
+  <meta name="twitter:description" content="Application gratuite pour apprendre le russe en français : cas, conjugaison, banque de mots, dictée, traduction.">
+  <meta name="twitter:image" content="https://freskorussedist.vercel.app/icon-512.png">
+  <!-- Données structurées : indiquent aux moteurs et aux IA que « FreskoRusse » est une application d'apprentissage du russe (et non une fresque). -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "FreskoRusse",
+    "alternateName": ["Fresko Russe", "Fresko Russe application"],
+    "url": "https://freskorussedist.vercel.app/",
+    "description": "Application gratuite pour apprendre le russe en français : les 6 cas, la conjugaison, la banque de mots, la dictée, la traduction et des textes de lecture.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web, Android, iOS",
+    "inLanguage": "fr",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
+    "author": { "@type": "Person", "name": "Ferol EBATA-MOMBOULI", "url": "https://ferol-ebata-mombouli.vercel.app/" }
+  }
+  </script>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
-  <div id="root"></div>
+  <!-- Contenu de secours : lu par les robots qui n'exécutent pas le JavaScript. React le remplace dès que l'application démarre. -->
+  <div id="root">
+    <div style="max-width:720px;margin:0 auto;padding:32px 20px;font-family:system-ui,sans-serif;line-height:1.6;color:#EDE9F6">
+      <h1>FreskoRusse : apprendre le russe en français</h1>
+      <p>FreskoRusse est une application web gratuite et installable pour apprendre le russe, même sans connexion.</p>
+      <ul>
+        <li>Les cas : les 6 cas russes expliqués avec leurs terminaisons, des exemples et des exercices.</li>
+        <li>Les verbes : conjugaison au présent, au passé et au futur, aspects imperfectif et perfectif.</li>
+        <li>Banque de mots : vocabulaire proche du français, en cartes à retourner.</li>
+        <li>Phrases utiles : visa, université, logement, vie quotidienne, urgences, banque.</li>
+        <li>Bibliothèque : textes de lecture par niveau, avec audio et traduction.</li>
+        <li>Dictée et traduction : s'entraîner à écouter, écrire et traduire.</li>
+      </ul>
+      <p>Pensée pour les francophones qui partent étudier en Russie. Activez JavaScript pour utiliser l'application.</p>
+    </div>
+  </div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

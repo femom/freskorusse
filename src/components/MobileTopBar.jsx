@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft, Search, Star } from "lucide-react";
 import { Link } from "../lib/router.jsx";
+import freskoLogo from "../assets/fresko-logo.png";
 import { NetPill } from "./SettingsControls.jsx";
 
 // Barre du haut (mobile). Sur une page de détail (un cas, un verbe), la flèche
@@ -14,7 +15,7 @@ export default function MobileTopBar({ title, parent, xp, onSearch }) {
           <ArrowLeft size={20} aria-hidden="true" />
         </Link>
       ) : (
-        <Link to="home" className="topbar-logo" aria-label="FreskoRusse, accueil">РУ</Link>
+        <Link to="home" className="topbar-logo" aria-label="FreskoRusse, accueil"><img src={freskoLogo} alt="" width="34" height="34" /></Link>
       )}
       <div className="topbar-title">{title}</div>
       <NetPill />

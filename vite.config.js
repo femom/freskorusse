@@ -22,7 +22,7 @@ export default defineConfig({
       registerType: "prompt",
       // L'enregistrement est fait à la main dans src/main.jsx (initPwa) : on désactive l'injection automatique.
       injectRegister: false,
-      includeAssets: ["icon-192.png", "icon-512.png", "icon-mask-512.png"],
+      includeAssets: ["icon-192.png", "icon-512.png", "icon-mask-512.png", "apple-touch-icon.png", "favicon-32.png"],
       manifest: {
         name: "FreskoRusse",
         short_name: "FreskoRusse",

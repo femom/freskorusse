@@ -27,19 +27,21 @@ async function play(answers) {
 }
 
 describe("moteur de leçon : score, bulle, autocollant", () => {
-  it("série réussie : bulle verte, autocollant citron, détail du score, meilleur score enregistré", async () => {
+  it("série réussie : bulle verte, Fresko content, détail du score, meilleur score enregistré", async () => {
     const dialog = await play(["OK", "OK", "OK"]);
     expect(await within(dialog).findByText("Leçon terminée !")).toBeTruthy();
     expect(within(dialog).getByText("3 bonnes réponses sur 3")).toBeTruthy();
-    expect(dialog.querySelector(".sticker.win")).toBeTruthy();
+    expect(within(dialog).getByAltText("Fresko, content")).toBeTruthy();
+    expect(dialog.querySelector(".sticker")).toBeNull();
     expect(scores().test).toMatchObject({ best: 3, total: 3 });
   });
 
-  it("série perdue (3 erreurs) : autocollant rose, score de 0 enregistré", async () => {
+  it("série perdue (3 erreurs) : Fresko triste, score de 0 enregistré", async () => {
     const dialog = await play(["X", "X", "X"]);
     expect(await within(dialog).findByText("Plus de vies")).toBeTruthy();
     expect(within(dialog).getByText("0 bonne réponse sur 3")).toBeTruthy();
-    expect(dialog.querySelector(".sticker.lose")).toBeTruthy();
+    expect(within(dialog).getByAltText("Fresko, triste")).toBeTruthy();
+    expect(within(dialog).queryByAltText("Fresko, content")).toBeNull();
     expect(scores().test).toMatchObject({ best: 0, total: 3 });
   });
 

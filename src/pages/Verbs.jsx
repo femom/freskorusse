@@ -135,7 +135,7 @@ export default function Verbs({ selected, addXp }){
   // --- Vue d'ensemble (aucun verbe sélectionné) -------------------------------
   if(!active){
     return (
-      <section>
+      <section className="page-wide">
         <h1 className="title">Les verbes russes</h1>
         <p className="subtitle">{verbs.length} verbes essentiels : ouvre un verbe pour voir sa conjugaison complète.</p>
 
@@ -192,7 +192,7 @@ export default function Verbs({ selected, addXp }){
   const AUX_FUTURE = ["бу́ду","бу́дешь","бу́дет","бу́дем","бу́дете","бу́дут"];
 
   return (
-    <section>
+    <section className="page-mid">
       <Breadcrumb to="verbs" parentLabel="Les verbes" current={active.fr} />
 
       <div className="verb-header">
@@ -215,13 +215,15 @@ export default function Verbs({ selected, addXp }){
       {active.imp.present && (
         <div className="tense-block">
           <div className="tense-title">Présent</div>
-          <div className="conj-col conj-col-solo">
-            <div className="aspect-label">{active.imp.ru} · {groupLabel[active.imp.group]}</div>
-            {active.imp.present.map((form,i)=>(
-              <ConjRow key={i} pron={PRON[i]} word={form} personIndex={i} ruLabel={active.imp.ru} color={col}/>
-            ))}
+          <div className="conj-grid">
+            <div className="conj-col">
+              <div className="aspect-label">{active.imp.ru} · {groupLabel[active.imp.group]}</div>
+              {active.imp.present.map((form,i)=>(
+                <ConjRow key={i} pron={PRON[i]} word={form} personIndex={i} ruLabel={active.imp.ru} color={col}/>
+              ))}
+            </div>
+            <p className="full-note conj-note">Seul l'imperfectif a un présent : le perfectif n'en a pas.</p>
           </div>
-          <div className="full-note">Seul l'imperfectif a un présent : le perfectif n'en a pas.</div>
         </div>
       )}
 

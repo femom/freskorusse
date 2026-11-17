@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link } from "../lib/router.jsx";
+import freskoLogo from "../assets/fresko-logo.png";
 import { MODULE_BY_KEY, NAV_GROUPS } from "../navigation.js";
 import { XpBadge, ThemeToggle, SoundToggle, InstallButton, OfflineStatus, NetPill } from "./SettingsControls.jsx";
 
@@ -36,7 +37,7 @@ export default function Sidebar({
     <nav className="side" aria-label="Navigation principale">
       <div className="nav-header">
         <Link to="home" className={"brand" + (collapsed ? " compact" : "")} aria-label="FreskoRusse, accueil">
-          <div className="logo" aria-hidden="true">РУ</div>
+          <div className="logo" aria-hidden="true"><img src={freskoLogo} alt="" width="34" height="34" /></div>
           {!collapsed && (
             <div className="txt">
               <strong>FreskoRusse</strong>
