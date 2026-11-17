@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Shuffle } from "lucide-react";
 import { libraryTexts, libraryLevels } from "../data/library.js";
+import SpeakButton from "../components/SpeakButton.jsx";
 import { navigate, useRoute } from "../lib/router.jsx";
 import { legible } from "../lib/color.js";
 
@@ -36,8 +37,13 @@ export default function Library(){
       <p className="subtitle">Un texte tiré au hasard, sans savoir à l'avance s'il sera facile ou difficile, comme une vraie lecture.</p>
 
       <article className="card library-card">
-        <div className="library-level-badge" style={{color: levelColor, borderColor: levelColor}}>
-          {level.label}
+        <div className="library-card-top">
+          <div className="library-level-badge" style={{color: levelColor, borderColor: levelColor}}>
+            {level.label}
+          </div>
+          <div className="library-audio-wrap">
+            <SpeakButton text={current.ru} label="Écouter" className="play-btn library-audio-btn" />
+          </div>
         </div>
         <h2 className="library-title" lang="ru">{current.title}</h2>
         <p className="library-title-fr">{current.titleFr}</p>

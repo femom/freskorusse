@@ -1116,6 +1116,17 @@ a.card {
    color: var(--ink-soft);
    margin-top: 2px;
 }
+.verb-headword-audio{
+   display:flex;
+   flex-wrap:wrap;
+   gap:8px;
+   margin-top:10px;
+}
+.verb-headword-audio .play-btn{
+   min-height:44px;
+   margin:0;
+   padding:10px 14px;
+}
 
 .aspect-note {
    font-size: 0.85rem;
@@ -1210,7 +1221,45 @@ a.card {
 .conj-row .form {
    font-weight: 700;
 }
-
+.form-sound{
+   display:inline-flex;
+   align-items:center;
+   gap:8px;
+}
+.conj-audio-control{
+   position:relative;
+   display:inline-flex;
+   flex:0 0 44px;
+   justify-content:center;
+}
+.conj-audio-btn{
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   width:44px;
+   height:44px;
+   padding:0;
+   border:1px solid var(--line);
+   border-radius:50%;
+   background:var(--card);
+   color:var(--ink-soft);
+   cursor:pointer;
+}
+.conj-audio-btn:hover{ background:var(--bg); color:var(--ink); }
+.conj-audio-control .speak-note{
+   position:absolute;
+   top:100%;
+   right:0;
+   z-index:2;
+   width:max-content;
+   max-width:min(240px, calc(100vw - 48px));
+   margin-top:4px;
+   padding:8px 10px;
+   border:1px solid var(--line);
+   border-radius:var(--radius-sm);
+   background:var(--card);
+   box-shadow:var(--shadow);
+}
 .full-note {
    font-size: 0.8rem;
    color: var(--ink-faint);
@@ -2006,6 +2055,13 @@ dialog.game-overlay:not([open]) {
    l'utilisateur, juste informatif une fois le texte tiré au hasard).
    ----------------------------------------------------------------------------- */
 .library-card{ padding:26px 28px; margin-bottom:20px; }
+.library-card-top{
+   display:flex;
+   justify-content:space-between;
+   align-items:center;
+   gap:12px;
+   margin-bottom:14px;
+}
 .library-level-badge{
    display:inline-block;
    font-size:0.72rem;
@@ -2015,7 +2071,29 @@ dialog.game-overlay:not([open]) {
    padding:5px 12px;
    border-radius:999px;
    border:1px solid;
-   margin-bottom:14px;
+   margin-bottom:0;
+}
+.library-audio-btn{
+   min-height:44px;
+   margin:0;
+   padding:10px 16px;
+   flex-shrink:0;
+}
+.library-audio-wrap{ position:relative; flex:0 0 auto; }
+.library-audio-wrap .speak-note{
+   position:absolute;
+   top:100%;
+   right:0;
+   z-index:2;
+   width:max-content;
+   max-width:min(280px, calc(100vw - 48px));
+   margin-top:4px;
+   padding:8px 10px;
+   border:1px solid var(--line);
+   border-radius:var(--radius-sm);
+   background:var(--card);
+   box-shadow:var(--shadow);
+   text-align:right;
 }
 .library-title{ font-size:1.3rem; font-weight:800; margin:0 0 2px 0; }
 .library-title-fr{ font-size:0.85rem; color:var(--ink-faint); margin:0 0 18px 0; }

@@ -7,8 +7,9 @@ import LessonEngine from "../components/LessonEngine.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 import FilterInput from "../components/FilterInput.jsx";
 import Pager from "../components/Pager.jsx";
+import SpeakButton from "../components/SpeakButton.jsx";
 import { Link } from "../lib/router.jsx";
-import { shuffle } from "../lib/text.js";
+import { foldForSearch, shuffle } from "../lib/text.js";
 import { badgeColors, legible } from "../lib/color.js";
 
 // Construit dynamiquement la banque de questions pour la "leçon globale" des verbes,
@@ -48,27 +49,50 @@ const PAGER_ITEMS = verbs.map((v)=> ({ key: v.id, label: v.fr }));
 // dans IRREGULAR_ENDING_LENGTHS (есть, съесть, дать).
 function splitEnding(word, personIndex, ruLabelForOverride){
   const lengths = IRREGULAR_ENDING_LENGTHS[ruLabelForOverride] || REGULAR_ENDING_LENGTHS;
-  const n = Math.min(lengths[personIndex], word.length - 1); // -1 : jamais tout le mot
-  const cut = word.length - n;
-  return { stem: word.slice(0, cut), ending: word.slice(cut) };
+  const letterCount = [...word].filter((char)=>char !== "\u0301").length;
+  const n = Math.min(lengths[personIndex], letterCount - 1); // -1 : jamais tout le mot
+  return splitBeforeLetters(word, n);
 }
 
 // Découpage pour le passé : la terminaison est -л / -ла / -ло / -ли dans la
 // grande majorité des cas. Quelques verbes (мог, помог...) perdent le л au
 // masculin — dans ce cas on ne colore rien plutôt que de risquer une coupe fausse.
 function splitPastEnding(word){
-  if(word.endsWith("ла") || word.endsWith("ло") || word.endsWith("ли")){
-    return { stem: word.slice(0, -2), ending: word.slice(-2) };
+  const plain = word.replace(/\u0301/g, "");
+  if(plain.endsWith("ла") || plain.endsWith("ло") || plain.endsWith("ли")){
+    return splitBeforeLetters(word, 2);
   }
-  if(word.endsWith("л")){
-    return { stem: word.slice(0, -1), ending: "л" };
+  if(plain.endsWith("л")){
+    return splitBeforeLetters(word, 1);
   }
   return { stem: word, ending: "" };
+}
+
+function splitBeforeLetters(word, count){
+  const chars = [...word];
+  let found = 0;
+  let cut = chars.length;
+  while(cut > 0 && found < count){
+    cut--;
+    if(chars[cut] !== "\u0301") found++;
+  }
+  return { stem: chars.slice(0, cut).join(""), ending: chars.slice(cut).join("") };
 }
 
 // Affiche un mot russe avec sa terminaison mise en couleur (span dédié).
 function Highlighted({ stem, ending, color }){
   return <>{stem}<span style={{color}}>{ending}</span></>;
+}
+
+function FormAudio({ word, children, color = null }){
+  return (
+    <span className="form-sound">
+      <span className="form" style={color ? {color} : undefined}>{children || word}</span>
+      <span className="conj-audio-control">
+        <SpeakButton text={word} ariaLabel={`Écouter ${word}`} className="conj-audio-btn" />
+      </span>
+    </span>
+  );
 }
 
 // Une ligne "pronom -> forme conjuguée" pour le présent ou le futur, avec la
@@ -78,7 +102,7 @@ function ConjRow({ pron, word, personIndex, ruLabel, color }){
   return (
     <div className="conj-row">
       <span className="pron">{pron}</span>
-      <span className="form"><Highlighted stem={stem} ending={ending} color={color} /></span>
+      <FormAudio word={word}><Highlighted stem={stem} ending={ending} color={color} /></FormAudio>
     </div>
   );
 }
@@ -89,7 +113,7 @@ function PastRow({ pron, word, color }){
   return (
     <div className="conj-row">
       <span className="pron">{pron}</span>
-      <span className="form"><Highlighted stem={stem} ending={ending} color={color} /></span>
+      <FormAudio word={word}><Highlighted stem={stem} ending={ending} color={color} /></FormAudio>
     </div>
   );
 }
@@ -101,9 +125,9 @@ export default function Verbs({ selected, addXp }){
   const [filter, setFilter] = useState("");
   const active = verbs.find(v=>v.id===selected);
   const filtered = useMemo(()=>{
-    const f = filter.trim().toLowerCase();
+    const f = foldForSearch(filter);
     if(!f) return verbs;
-    return verbs.filter(v=> v.fr.toLowerCase().includes(f) || v.imp.ru.toLowerCase().includes(f) || (v.perf && v.perf.ru.toLowerCase().includes(f)));
+    return verbs.filter(v=> foldForSearch(v.fr).includes(f) || foldForSearch(v.imp.ru).includes(f) || (v.perf && foldForSearch(v.perf.ru).includes(f)));
   }, [filter]);
 
   const globalQuestions = useMemo(()=> shuffle(questionPool).slice(0,12), [lessonOpen]);
@@ -165,7 +189,7 @@ export default function Verbs({ selected, addXp }){
   // Le futur composé de l'imperfectif (буду/будешь...) n'est jamais "coupé" :
   // on colore l'auxiliaire en entier (c'est lui qui porte toute la conjugaison),
   // l'infinitif est affiché une seule fois, au centre, comme dans le document source.
-  const AUX_FUTURE = ["буду","будешь","будет","будем","будете","будут"];
+  const AUX_FUTURE = ["бу́ду","бу́дешь","бу́дет","бу́дем","бу́дете","бу́дут"];
 
   return (
     <section>
@@ -178,6 +202,10 @@ export default function Verbs({ selected, addXp }){
         <div>
           <h1 className="verb-name">{active.fr}</h1>
           <div className="verb-sub">{active.imp.ru}{active.perf ? ` (imperfectif) · ${active.perf.ru} (perfectif)` : " (imperfectif seul)"}</div>
+          <div className="verb-headword-audio">
+            <SpeakButton text={active.imp.ru} label={`Écouter ${active.imp.ru}`} className="play-btn" />
+            {active.perf && <SpeakButton text={active.perf.ru} label={`Écouter ${active.perf.ru}`} className="play-btn" />}
+          </div>
         </div>
       </div>
 
@@ -207,7 +235,7 @@ export default function Verbs({ selected, addXp }){
             {AUX_FUTURE.map((aux,i)=>(
               <div className="conj-row" key={i}>
                 <span className="pron">{PRON[i]}</span>
-                <span className="form" style={{color:col}}>{aux}</span>
+                <FormAudio word={aux} color={col} />
               </div>
             ))}
           </div>

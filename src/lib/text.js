@@ -3,7 +3,7 @@
 // Normalise une réponse avant comparaison : espaces superflus, casse, ё/е
 // (souvent confondus à l'écrit) et ponctuation ignorés.
 export function normalize(s) {
-  return (s || "").trim().toLowerCase().replace(/ё/g, "е").replace(/[.,!?]/g, "");
+  return (s || "").trim().toLowerCase().replace(/\u0301/g, "").replace(/ё/g, "е").replace(/[.,!?]/g, "");
 }
 
 // Normalisation « souple » pour la recherche : sans accents ni signes de
