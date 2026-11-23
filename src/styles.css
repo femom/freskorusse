@@ -967,12 +967,6 @@ a.card {
    gap: 14px;
    padding: 20px 22px;
    cursor: pointer;
-   transition: border-color .15s ease, transform .12s ease;
-}
-
-.module-card:hover {
-   transform: translateY(-2px);
-   border-color: var(--ink-faint);
 }
 
 .module-card .icon-lg {
@@ -1060,12 +1054,6 @@ a.card {
    gap: 10px;
    padding: 13px 14px;
    cursor: pointer;
-   transition: border-color .15s ease, transform .12s ease;
-}
-
-.verb-card:hover {
-   transform: translateY(-2px);
-   border-color: var(--ink-faint);
 }
 
 .verb-card .badge {
@@ -2326,17 +2314,12 @@ dialog.game-overlay:not([open]) {
 .case-card {
    display: flex;
    flex-direction: column;
-   border: 2px solid color-mix(in srgb, var(--case-c) 55%, var(--line));
+   border: 1px solid color-mix(in srgb, var(--case-c) 55%, var(--line));
    border-radius: var(--radius-lg);
    background: color-mix(in srgb, var(--case-c) 6%, var(--card));
    overflow: hidden;
    color: inherit;
    text-decoration: none;
-   transition: transform .15s ease, border-color .15s ease;
-}
-.case-card:hover {
-   transform: translateY(-2px);
-   border-color: var(--case-c);
 }
 .case-card-head {
    display: flex;
@@ -3247,9 +3230,7 @@ nav.side {
    border-radius: 24px;
    color: inherit;
    text-decoration: none;
-   transition: transform .15s ease;
 }
-.pick:hover { transform: translateY(-2px); }
 .pick::after {
    content: "";
    position: absolute;
@@ -3424,12 +3405,18 @@ h1.title {
    box-shadow: var(--glass-hi);
 }
 
-/* Cartes : léger relief au survol, pastille de score */
+/* Cartes interactives : bordure de thème au survol, sans déplacement */
 .verb-card,
 .module-card,
 .case-card,
-.phrase-item {
-   transition: transform .15s ease, box-shadow .15s ease;
+.pick {
+   transition: border-color .15s ease;
+}
+.verb-card:hover,
+.module-card:hover,
+.case-card:hover,
+.pick:hover {
+   border-color: var(--ink-faint);
 }
 .score-chip {
    margin-left: auto;
@@ -3622,4 +3609,49 @@ h1.title {
 .spotlight-card > * {
    position: relative;
    z-index: 1;
+}
+
+/* ===== Mode léger : téléphones et écrans tactiles =====
+   Les surfaces « verre » (backdrop-filter) obligent le GPU à recalculer un flou à chaque image
+   quand on défile, et les grandes ombres floues ajoutent du travail de peinture. Sur mobile on les
+   remplace par des fonds pleins et des ombres courtes : même mise en page, défilement fluide.
+   Notion : performance de rendu (peinture, composition), `backdrop-filter` parmi les effets les plus coûteux. */
+@media (max-width: 1023px), (pointer: coarse) {
+   .glass,
+   dialog.search-dialog,
+   dialog.install-dialog,
+   .toast,
+   .mobile-topbar,
+   .tabbar,
+   .game-card {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+   }
+   .glass,
+   .mobile-topbar,
+   .tabbar,
+   .game-card {
+      background: var(--card);
+   }
+   .challenge-card,
+   .challenge-card h2 {
+      color: var(--ink);
+   }
+   dialog.search-dialog,
+   dialog.install-dialog,
+   .toast {
+      background: var(--card);
+   }
+   :root,
+   :root[data-theme="light"] {
+      --glass-shadow: 0 2px 6px rgba(8, 4, 16, 0.2);
+   }
+   /* Les ombres larges des boutons et vignettes deviennent courtes. */
+   .btn-primary,
+   .pick,
+   .module-card,
+   .home-hero,
+   .stat-chip {
+      box-shadow: var(--glass-hi), 0 2px 6px rgba(0, 0, 0, 0.16);
+   }
 }

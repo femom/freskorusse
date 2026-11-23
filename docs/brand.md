@@ -80,7 +80,10 @@ car les séries n'ont pas toutes le même nombre de questions.
 
 ## Mascotte : Fresko
 - Serpent vert citron avec des lunettes noires carrées de style voxel, créé par Ferol.
-- Source : `design/fresko-planche-v1.png` (planche 1536x1024, fond quasi noir). Les icônes de `public/` en sont tirées par recadrage.
-- Icônes : `icon-512.png`, `icon-192.png`, `icon-mask-512.png` (Android « maskable », art à 66 % pour rester dans la zone de sécurité), `apple-touch-icon.png` (180, plein cadre), `favicon-32.png` (tête seule).
-- À faire : remplacer par les fichiers d'origine de la mascotte (1024 px minimum) pour une netteté maximale.
+- Sources dans `design/` : `fresko-content-original.png` (content, couronne, fond transparent, 1254 px), `fresko-triste-original.png` (triste, carré noir arrondi) et `fresko-planche-v1.png` (ancienne planche néon).
+- Icônes générées à partir de Fresko content, centré sur le fond prune `#211B2E` (celui du thème et du `background_color` du manifeste) :
+  `icon-512.png` et `icon-192.png` (coins arrondis), `icon-mask-512.png` (Android « maskable », art à 58 % pour rester dans la zone de sécurité),
+  `apple-touch-icon.png` (180, plein cadre, iOS arrondit lui-même), `favicon-32.png` (tête seule).
+- Logo de la barre latérale et de la barre mobile : `src/assets/fresko-logo.png`.
+- Écran de fin de leçon : `fresko-content.png` (victoire) et `fresko-triste.png` (défaite), choisis par `EndScreen` selon `tone`.
 - Rappel : les icônes déjà installées se mettent à jour lentement (Android) ou demandent une réinstallation (iOS).

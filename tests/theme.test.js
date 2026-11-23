@@ -52,11 +52,23 @@ describe("style verre : plus de contours noirs épais", () => {
     expect(css).not.toMatch(/border:\s*2px solid var\(--ink\)/);
     expect(css).not.toMatch(/--outline\s*:/);
   });
+  it("le texte du défi reste lisible sur sa carte mobile dans les deux thèmes", () => {
+    const mobileStyles = css.slice(css.lastIndexOf("@media (max-width: 1023px), (pointer: coarse)"));
+    expect(mobileStyles).toMatch(/\.challenge-card,\s*\.challenge-card h2\s*\{\s*color:\s*var\(--ink\);/);
+  });
   it("les variables du verre existent dans les deux thèmes", () => {
     Object.values(themes).forEach((b) => ["glass-line", "glass-hi", "glass-shadow", "glass-fill"].forEach((v) => expect(b).toContain(`--${v}:`)));
   });
   it("un repli est prévu quand le navigateur n'a pas de flou d'arrière-plan", () => {
     expect(css).toMatch(/@supports not \(\(backdrop-filter: blur\(1px\)\)/);
+  });
+});
+
+describe("survol des cartes", () => {
+  it("utilise une bordure du thème sans soulever les cartes", () => {
+    expect(css).toMatch(/\.verb-card:hover,\s*\.module-card:hover,\s*\.case-card:hover,\s*\.pick:hover\s*\{\s*border-color:\s*var\(--ink-faint\);/);
+    expect(css).not.toMatch(/\.(?:verb-card|module-card|case-card|pick):hover\s*\{[^}]*transform:\s*translateY/);
+    expect(css).toMatch(/\.case-card\s*\{[^}]*border:\s*1px solid/);
   });
 });
 
