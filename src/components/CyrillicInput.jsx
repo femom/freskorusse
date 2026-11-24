@@ -66,18 +66,6 @@ const CyrillicInput = forwardRef(function CyrillicInput({
 
   return (
     <div className="cyrillic-input">
-      {showCyrillicKeyboard && !disabled && (
-        <button
-          type="button"
-          className="cyrillic-toggle"
-          aria-expanded={keyboardOpen}
-          onClick={toggleKeyboard}
-        >
-          <span className="cyrillic-toggle-mark" lang="ru" aria-hidden="true">Я</span>
-          {keyboardOpen ? "Clavier du téléphone" : "Clavier russe"}
-        </button>
-      )}
-
       <input
         {...inputProps}
         ref={inputRef}
@@ -91,6 +79,18 @@ const CyrillicInput = forwardRef(function CyrillicInput({
         onBlur={(event) => rememberSelection(event.currentTarget)}
         onKeyDown={onKeyDown}
       />
+
+      {showCyrillicKeyboard && !disabled && (
+        <button
+          type="button"
+          className="cyrillic-toggle"
+          aria-expanded={keyboardOpen}
+          onClick={toggleKeyboard}
+        >
+          <span className="cyrillic-toggle-mark" lang="ru" aria-hidden="true">Я</span>
+          {keyboardOpen ? "Clavier du téléphone" : "Clavier russe"}
+        </button>
+      )}
 
       {keyboardOpen && !disabled && (
         <div className="cyrillic-keyboard" role="group" aria-label="Clavier russe">

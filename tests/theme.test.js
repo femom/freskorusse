@@ -4,6 +4,7 @@ import { contrastRatio } from "../src/lib/color.js";
 
 // Les couleurs viennent du CSS lui-même : si quelqu'un change une variable, ce test recalcule.
 const css = fs.readFileSync("src/styles.css", "utf8");
+const guideCss = fs.readFileSync("public/guides.css", "utf8");
 
 function tokenBlock(selectorStart) {
   let from = 0;
@@ -44,6 +45,30 @@ describe.each(Object.entries(themes))("palette %s", (_name, block) => {
   it("boutons principaux et texte sur pastels : très lisibles (7:1)", () => {
     expect(ratio("on-btn", "btn")).toBeGreaterThanOrEqual(7);
     ["lime", "lilac", "butter", "pink", "mint"].forEach((p) => expect(ratio("on-pastel", p), p).toBeGreaterThanOrEqual(7));
+  });
+});
+
+describe("palette des guides SEO", () => {
+  const palettes = [
+    { name: "Nuit prune", block: guideCss.match(/:root\s*\{([^}]+)\}/)?.[1] },
+    { name: "Lavande", block: guideCss.match(/:root\[data-theme="light"\]\s*\{([^}]+)\}/)?.[1] },
+  ];
+
+  it.each(palettes)("$name conserve le contraste AA pour les textes et liens", ({ block }) => {
+    expect(block).toBeTruthy();
+    const color = (name) => {
+      const match = block.match(new RegExp(`--page-${name}:\\s*(#[0-9A-Fa-f]{6})`));
+      expect(match, `variable --page-${name}`).toBeTruthy();
+      return match[1];
+    };
+    const ratio = (foreground, background) => contrastRatio(color(foreground), color(background));
+
+    ["ink", "soft", "muted", "link"].forEach((foreground) => {
+      ["bg", "card", "nav"].forEach((background) => {
+        expect(ratio(foreground, background), `${foreground} sur ${background}`).toBeGreaterThanOrEqual(4.5);
+      });
+    });
+    expect(ratio("on-lilac", "lilac")).toBeGreaterThanOrEqual(4.5);
   });
 });
 

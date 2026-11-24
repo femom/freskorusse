@@ -17,6 +17,12 @@ const PICKS = [
   { to: "translation", tag: "Pratique", title: "Traduction", text: "Français et russe, à ton rythme.", letter: "Я", tone: "lilac" },
 ];
 
+const GUIDES = [
+  { href: "/guides/alphabet-cyrillique.html", mark: "Ая", title: "Alphabet cyrillique", description: "Reconnaître les 33 lettres russes." },
+  { href: "/guides/cas-russes.html", mark: "6", title: "Les six cas russes", description: "Comprendre leur rôle et leurs exemples." },
+  { href: "/guides/conjugaison-russe.html", mark: "я", title: "Conjugaison russe", description: "Présent, passé et aspects des verbes." },
+];
+
 // Cubes de l'alphabet : la signature visuelle de FreskoRusse (décoratif, masqué pour les lecteurs d'écran).
 function LetterBlocks() {
   return (
@@ -151,6 +157,21 @@ export default function Home({ xp = 0 }) {
           </div>
         </aside>
       </div>
+
+      <section className="home-guides" aria-labelledby="home-guides">
+        <h2 className="block-title" id="home-guides">Guides pour débuter</h2>
+        <div className="module-cards">
+          {GUIDES.map((guide) => (
+            <a className="card module-card guide-card" href={guide.href} key={guide.href}>
+              <span className="icon-lg guide-card-mark" aria-hidden="true">{guide.mark}</span>
+              <div>
+                <h2>{guide.title}</h2>
+                <p>{guide.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
 
       <h2 className="block-title">Tous les modules</h2>
       <div className="module-cards">

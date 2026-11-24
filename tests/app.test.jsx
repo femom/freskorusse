@@ -18,6 +18,10 @@ describe("navigation : de l'accueil aux détails", () => {
     expect(h1().textContent).toBe("Привет !");
     const link = screen.getAllByRole("link").find((a) => a.getAttribute("href") === "#/cas" && a.className.includes("module-card"));
     expect(link).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Guides pour débuter" })).toBeTruthy();
+    ["/guides/alphabet-cyrillique.html", "/guides/cas-russes.html", "/guides/conjugaison-russe.html"].forEach((href) => {
+      expect(screen.getAllByRole("link").some((anchor) => anchor.getAttribute("href") === href)).toBe(true);
+    });
   });
 
   it("liste des cas -> détail -> retour à la liste (bouton retour du navigateur ET lien)", async () => {

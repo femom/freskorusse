@@ -22,6 +22,14 @@ function openKeyboard(input) {
 }
 
 describe("clavier cyrillique intégré", () => {
+  it("place le choix de clavier sous le champ de réponse", () => {
+    render(<ControlledInput />);
+    const input = screen.getByRole("textbox", { name: "Réponse" });
+    const switchButton = screen.getByRole("button", { name: "Clavier russe" });
+
+    expect(input.compareDocumentPosition(switchButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("insère une lettre à la place du texte sélectionné", () => {
     render(<ControlledInput initialValue="книга" />);
     const input = screen.getByRole("textbox", { name: "Réponse" });

@@ -31,6 +31,16 @@
 
 Une route inconnue retombe sur l'accueil. Un sous-élément inconnu affiche la liste du module.
 
+## Guides publics pour le référencement
+Les guides à URL classique (`/guides/*.html`) sont des pages HTML autonomes dans `public/guides/`,
+pas des routes du routeur par hash. Chacun a son titre, sa description, son canonical et ses données
+structurées, puis renvoie vers les exercices avec des liens `/#/...`. L'accueil React et le HTML de
+secours dans `index.html` les relient pour qu'ils soient trouvables sans dépendre uniquement du sitemap.
+
+Pour ajouter un guide, mettre à jour `public/sitemap.xml`, les liens de l'accueil statique et React,
+et `tests/seo.test.js`. La configuration PWA précache les pages HTML et leur CSS : vérifier aussi le
+build et `npm run verify:offline`.
+
 ## Défilement et focus
 Après chaque changement d'écran (voir `App.jsx`) :
 - clic sur un lien → haut de page, focus sur le titre (annonce lecteur d'écran) ;
