@@ -5,6 +5,7 @@ import GameShell, { Hearts, Feedback, EndScreen } from "./GameShell.jsx";
 import { play } from "../lib/sound.js";
 import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
 import SpeakButton from "./SpeakButton.jsx";
+import CyrillicInput from "./CyrillicInput.jsx";
 
 // Moteur de leçon générique réutilisé par les cas, les verbes ET la banque de
 // mots : 3 vies, XP, questions "à trous" (type="type") ou à choix multiples
@@ -28,7 +29,6 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
 
   useEffect(()=>{
     setAnswered(false); setSelected(null); setCorrect(null);
-    if(inputRef.current) inputRef.current.value = "";
     if(q && q.type === "type" && inputRef.current) inputRef.current.focus();
   }, [pos]);
 
@@ -121,9 +121,9 @@ export default function LessonEngine({ questions, onClose, onFinish, title, acce
               })}
             </div>
           ) : (
-            <input ref={inputRef} type="text" className="answer-input" aria-label="Ta réponse" placeholder="ta réponse..." autoComplete="off" autoCapitalize="off" spellCheck={false}
+            <CyrillicInput key={pos} ref={inputRef} value={selected ?? ""} onValueChange={setSelected} showCyrillicKeyboard
+              aria-label="Ta réponse" placeholder="ta réponse..." autoComplete="off" autoCapitalize="off" spellCheck={false}
               disabled={answered}
-              onChange={(e)=> setSelected(e.target.value)}
               onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
             />
           )}

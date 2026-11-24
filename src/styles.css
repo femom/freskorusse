@@ -1487,6 +1487,101 @@ dialog.game-overlay:not([open]) {
    border-color: var(--lesson-accent, var(--ink-faint));
 }
 
+.cyrillic-input {
+   width: min(480px, calc(100vw - 40px), calc(100% + 96px));
+   margin: 0 auto 22px auto;
+   text-align: left;
+}
+.cyrillic-input .answer-input {
+   max-width: 280px;
+   margin: 0 auto;
+}
+.cyrillic-toggle {
+   min-height: 44px;
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   margin: 8px auto 0;
+   padding: 6px 10px;
+   border: 1px solid var(--field-border);
+   border-radius: 12px;
+   background: var(--glass-fill);
+   color: var(--ink);
+   font: inherit;
+   font-size: 0.84rem;
+   font-weight: 700;
+   cursor: pointer;
+   transition: border-color .15s ease, background-color .15s ease;
+}
+.cyrillic-toggle:hover {
+   border-color: var(--ink-faint);
+   background: var(--card);
+}
+.cyrillic-toggle-mark {
+   display: grid;
+   place-items: center;
+   width: 28px;
+   height: 28px;
+   border-radius: 9px;
+   background: var(--lilac);
+   color: var(--on-pastel);
+   font-weight: 800;
+}
+.cyrillic-keyboard {
+   margin-top: 10px;
+   padding: 10px;
+   border: 1px solid var(--glass-line);
+   border-radius: 18px;
+   background: var(--glass-fill);
+   box-shadow: var(--glass-hi), var(--glass-shadow);
+}
+.cyrillic-keyboard-rows {
+   display: flex;
+   flex-direction: column;
+   gap: 5px;
+}
+.cyrillic-key-row {
+   display: flex;
+   justify-content: center;
+   gap: 3px;
+}
+.cyrillic-key-row.row-2 { padding: 0 4%; }
+.cyrillic-key-row.row-3 { padding: 0 9%; }
+.cyrillic-key-row .cyrillic-key {
+   flex: 1 1 0;
+}
+.cyrillic-key {
+   min-width: 0;
+   min-height: 44px;
+   padding: 0;
+   border: 1px solid var(--line);
+   border-radius: 11px;
+   background: var(--card);
+   color: var(--ink);
+   font: inherit;
+   font-size: 1rem;
+   font-weight: 700;
+   cursor: pointer;
+   transition: border-color .12s ease, background-color .12s ease;
+}
+.cyrillic-key:hover:not(:disabled) {
+   border-color: var(--ink-faint);
+   background: var(--bg);
+}
+.cyrillic-key:disabled {
+   opacity: 0.55;
+   cursor: not-allowed;
+}
+.cyrillic-key-actions {
+   display: grid;
+   grid-template-columns: 1fr 2fr 1fr;
+   gap: 6px;
+   margin-top: 6px;
+}
+.cyrillic-key.action {
+   font-size: 0.78rem;
+}
+
 .mcq-grid {
    display: grid;
    grid-template-columns: 1fr 1fr;

@@ -6,6 +6,7 @@ import { speak } from "../lib/speech.js";
 import GameShell, { Hearts, Feedback, EndScreen } from "../components/GameShell.jsx";
 import { play } from "../lib/sound.js";
 import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
+import CyrillicInput from "../components/CyrillicInput.jsx";
 
 // Déroulé complet d'une session de dictée : tirage aléatoire des phrases, gestion
 // des cœurs/XP, écoute + révélation du texte, saisie et vérification.
@@ -28,7 +29,6 @@ function DictationGame({ onClose, onFinish }){
 
   useEffect(()=>{
     setAnswered(false); setCorrect(null); setRevealed(false); setTyped("");
-    if(inputRef.current) inputRef.current.value = "";
     if(inputRef.current) inputRef.current.focus();
   }, [pos]);
 
@@ -102,9 +102,9 @@ function DictationGame({ onClose, onFinish }){
 
           <div className="q-ru dictation-prompt">{item.fr}<span className="b">Traduction : écris la phrase russe correspondante</span></div>
 
-          <input ref={inputRef} type="text" className="answer-input" lang="ru" aria-label="Ta réponse en russe" placeholder="ta réponse en russe..." autoComplete="off" autoCapitalize="off" spellCheck={false}
+          <CyrillicInput key={pos} ref={inputRef} lang="ru" value={typed} onValueChange={setTyped} showCyrillicKeyboard
+            aria-label="Ta réponse en russe" placeholder="ta réponse en russe..." autoComplete="off" autoCapitalize="off" spellCheck={false}
             disabled={answered}
-            onChange={(e)=> setTyped(e.target.value)}
             onKeyDown={(e)=>{ if(e.key==="Enter"){ if(!answered && inputRef.current.value.trim()) check(inputRef.current.value); else if(answered) advance(); } }}
           />
 

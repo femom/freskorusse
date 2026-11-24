@@ -5,6 +5,7 @@ import { shuffle } from "../lib/text.js";
 import GameShell, { EndScreen } from "../components/GameShell.jsx";
 import { play } from "../lib/sound.js";
 import { recordActivity, recordLesson, recordScore } from "../lib/stats.js";
+import CyrillicInput from "../components/CyrillicInput.jsx";
 
 const SESSION_SIZE = Math.min(15, translation.length);
 
@@ -66,8 +67,8 @@ function TranslationGame({ onClose, onFinish }){
 
           {!revealed && (
             <>
-              <input type="text" className="answer-input" aria-label="Ta traduction" lang={dir === "fr2ru" ? "ru" : "fr"} placeholder="ta traduction (à l'oral ou à l'écrit)..." autoComplete="off" autoCapitalize="off" spellCheck={false}
-                value={attempt} onChange={e=>setAttempt(e.target.value)}
+              <CyrillicInput key={pos} aria-label="Ta traduction" lang={dir === "fr2ru" ? "ru" : "fr"} placeholder="ta traduction (à l'oral ou à l'écrit)..." autoComplete="off" autoCapitalize="off" spellCheck={false}
+                value={attempt} onValueChange={setAttempt} showCyrillicKeyboard={dir === "fr2ru"}
                 onKeyDown={(e)=>{ if(e.key==="Enter") reveal(); }}
               />
               <div className="game-actions"><button type="button" className="btn-primary ready" onClick={reveal}>Voir la traduction</button></div>
