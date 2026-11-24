@@ -3756,3 +3756,78 @@ h1.title {
       box-shadow: var(--glass-hi), 0 2px 6px rgba(0, 0, 0, 0.16);
    }
 }
+
+/* Exercices plein écran : garder le dialogue dans la zone visible du téléphone,
+   y compris avec un clavier ouvert ou les encoches des navigateurs mobiles. */
+@media (max-width: 600px) {
+   dialog.game-overlay {
+      height: 100vh;
+      height: 100dvh;
+      box-sizing: border-box;
+      padding: calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom)) 12px;
+      overscroll-behavior: contain;
+   }
+
+   .game-top {
+      gap: 8px;
+      margin-bottom: 16px;
+   }
+
+   .game-card {
+      box-sizing: border-box;
+      padding: 20px 14px;
+      border-radius: 22px;
+   }
+
+   .game-card .q-ru {
+      font-size: 1.12rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+   }
+
+   .cyrillic-input {
+      width: 100%;
+      box-sizing: border-box;
+   }
+
+   .answer-input,
+   .cyrillic-input .answer-input {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: none;
+   }
+
+   .game-actions {
+      width: 100%;
+   }
+
+   .game-actions .btn-primary {
+      min-width: 0;
+      max-width: 100%;
+   }
+
+   .cyrillic-keyboard {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 5px;
+   }
+
+   .cyrillic-key-row {
+      gap: 2px;
+   }
+
+   .cyrillic-key-row.row-2,
+   .cyrillic-key-row.row-3 {
+      padding: 0;
+   }
+
+   .cyrillic-key {
+      border-radius: 9px;
+      min-height: 42px;
+      font-size: 0.92rem;
+   }
+
+   .cyrillic-key-actions {
+      gap: 4px;
+   }
+}
